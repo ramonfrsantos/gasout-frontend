@@ -18,7 +18,7 @@ abstract class _NotificationControllerBase with Store {
   }
 
   @action
-  deleteNotification(int id) async {
+  deleteNotification(String id) async {
     await _repository.deleteNotification(id);
   }
 

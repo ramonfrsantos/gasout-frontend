@@ -143,7 +143,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  _showAlertDialog(BuildContext context, int id) {
+  _showAlertDialog(BuildContext context, String id) {
     Widget cancelaButton = TextButton(
       child: Text("NÃO", style: GoogleFonts.muli(
           fontSize: 16,

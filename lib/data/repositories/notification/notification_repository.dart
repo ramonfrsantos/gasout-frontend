@@ -77,7 +77,7 @@ class NotificationRepository {
     }
   }
 
-  Future<void> deleteNotification(int id) async {
+  Future<void> deleteNotification(String id) async {
     final String url = '${baseUrl}notification/delete/${id.toString()}';
     print(url);
 

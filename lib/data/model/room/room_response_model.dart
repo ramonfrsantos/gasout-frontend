@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class RoomResponseModel {
-  final int id;
+  final String id;
   final String name;
   final bool notificationOn;
   final bool alarmOn;
