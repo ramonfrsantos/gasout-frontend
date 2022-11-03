@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1070910061371",
+    "project_id": "gascheckapp-cf681",
+    "storage_bucket": "gascheckapp-cf681.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1070910061371:android:ded2810b624950bdc0951e",
+        "android_client_info": {
+          "package_name": "com.gasout.app.br"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1070910061371-bu98h24ai7kasrugm6143bt6v91hv1lg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCS02tCuQZLH2ESgeVgFNvrmckzeOzLSkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1070910061371-bu98h24ai7kasrugm6143bt6v91hv1lg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
