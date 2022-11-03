@@ -1,5 +1,5 @@
 class LoginResponseModel {
-  int? userId;
+  String? userId;
   String? login;
   String? token;
   String? refreshToken;

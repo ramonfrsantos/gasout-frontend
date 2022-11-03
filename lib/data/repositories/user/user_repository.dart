@@ -79,7 +79,7 @@ class UserRepository {
     }
   }
 
-  Future<void> deleteUser(int id, String email) async {
+  Future<void> deleteUser(String id, String email) async {
     final String url = '${baseUrl}notification/delete/$email/${id.toString()}';
     print(url);
 
