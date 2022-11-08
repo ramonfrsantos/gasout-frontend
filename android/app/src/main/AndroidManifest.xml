@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gascheck.app.br.gas_out_app">
-   <application
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <application
         android:label="GasOut"
         android:icon="@mipmap/launcher_icon">
         <activity

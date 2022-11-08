@@ -17,7 +17,6 @@ import 'app/config/environments.dart';
 import 'app/constants/gasout_constants.dart';
 import 'app/screens/home/home_screen.dart';
 import 'app/screens/notification/notification_screen.dart';
-import 'app/screens/stats/stats_screen.dart';
 import 'data/firebase_messaging/custom_firebase_messaging.dart';
 import 'data/model/class_builder_model.dart';
 import 'data/repositories/notification/notification_repository.dart';
@@ -106,7 +105,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     print(widget.username);
     print(widget.email);
 
-    idTextController.text = "sensor-de-gas";
+    idTextController.text = "gas-out-topic";
 
     if (widget.isConnected == false) {
       _connect();
@@ -156,9 +155,26 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             height: 26,
           ),
           onPressed: () {
-            String url =
+            String url1 =
                 'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
-            launchUrlString(url);
+            launchUrlString(url1);
+          },
+        ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Chat Telegram',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          icon: Image.asset(
+            "assets/images/icTelegram.png",
+            color: Colors.white,
+            width: 26,
+            height: 26,
+          ),
+          onPressed: () {
+            String url2 =
+                'https://telegram.me/@gasoutbot';
+            launchUrlString(url2);
           },
         ),
       ],
@@ -259,7 +275,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
       // progressDialog.setTitle(Text("Conectando"));
       // progressDialog.show();
 
-      widget.isConnected = await mqttConnect(idTextController.text.trim());
+      widget.isConnected = await mqttConnect("gas-out-topic");
       // progressDialog.dismiss();
 
       Navigator.push(
@@ -301,16 +317,40 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
+    widget.client.server = "aqltv1hod5z6j-ats.iot.us-east-1.amazonaws.com";
+    widget.client.clientIdentifier = "sensor-de-gas";
 
-    final MqttConnectMessage connMess =
-        MqttConnectMessage().withClientIdentifier(uniqueId).startClean();
+    final connMess =
+        MqttConnectMessage()
+            .withClientIdentifier("sensor-de-gas")
+            .withWillTopic("gas-out-topic")
+            .withWillMessage("Will Message")
+            .startClean()
+            .withWillQos(MqttQos.atLeastOnce);
     widget.client.connectionMessage = connMess;
 
-    await widget.client.connect();
+    print("MESSAGE: " + widget.client.connectionMessage.toString());
+    print("PORT: " + widget.client.port.toString());
+    print("CLIENT: " + widget.client.clientIdentifier.isEmpty.toString());
+
+    try {
+      await widget.client.connect();
+    } on NoConnectionException catch (e) {
+      // Raised by the client when connection fails.
+      print('Client exception - $e');
+      widget.client.disconnect();
+    } on SocketException catch (e) {
+      // Raised by the socket layer
+      print('Socket exception - $e');
+      widget.client.disconnect();
+    }
+
     if (widget.client.connectionStatus!.state ==
         MqttConnectionState.connected) {
       print("Conectado ao AWS com sucesso.");
     } else {
+      widget.client.disconnect();
+      print("Erro ao conectar com a AWS.");
       return false;
     }
 
