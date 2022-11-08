@@ -23,7 +23,7 @@ class NotificationResponseModel {
 
   factory NotificationResponseModel.fromMap(Map<String, dynamic> map) {
     return NotificationResponseModel(
-      id: map['id']?.toInt() ?? 0,
+      id: map['id'] ?? '',
       title: map['title'] ?? '',
       message: map['message'] ?? '',
       date: map['date'] ?? '',

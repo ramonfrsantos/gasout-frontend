@@ -32,7 +32,7 @@ class RoomResponseModel {
 
   factory RoomResponseModel.fromMap(Map<String, dynamic> map) {
     return RoomResponseModel(
-      id: map['id'].toInt() ?? 0,
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       notificationOn: map['notificationOn'],
       alarmOn: map['alarmOn'],

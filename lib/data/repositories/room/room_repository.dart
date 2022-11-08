@@ -10,8 +10,8 @@ class RoomRepository {
 
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<List<RoomResponseModel>> getUserRooms(String login) async {
-    final String url = '${baseUrl}room/find-all/$login';
+  Future<List<RoomResponseModel>> getUserRooms(String email) async {
+    final String url = '${baseUrl}rooms/find-all/$email';
     print(url);
     try {
       var response = await client.get(
@@ -44,7 +44,7 @@ class RoomRepository {
   }
 
   Future<void> sendRoomSensorValue(String name, String email, bool alarmOn, bool notificationOn, bool sprinklersOn, int sensorValue) async {
-    final String url = '${baseUrl}room/send-sensor-value';
+    final String url = '${baseUrl}rooms/sensor-measurement-details/$email';
     print(url);
 
     final bodyJSON =
@@ -53,10 +53,7 @@ class RoomRepository {
       "name" : name,
       "notificationOn": notificationOn,
       "sensorValue": sensorValue,
-      "sprinklersOn": sprinklersOn,
-      "user": {
-        "email": email
-      }
+      "sprinklersOn": sprinklersOn
     });
 
     print(bodyJSON);

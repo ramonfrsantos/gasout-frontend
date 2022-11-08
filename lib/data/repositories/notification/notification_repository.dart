@@ -12,7 +12,7 @@ class NotificationRepository {
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
   Future<List<NotificationResponseModel>> getAllNotifications() async {
-    final String url = '${baseUrl}notification/find-all';
+    final String url = '${baseUrl}notifications';
     print(url);
     try {
       var response = await client.get(
@@ -44,8 +44,8 @@ class NotificationRepository {
     }
   }
 
-  Future<List<NotificationResponseModel>> getUserNotifications(String login) async {
-    final String url = '${baseUrl}notification/find-all-recent/$login';
+  Future<List<NotificationResponseModel>> getUserNotifications(String email) async {
+    final String url = '${baseUrl}notifications/recent/$email';
     print(url);
     try {
       var response = await client.get(
@@ -78,7 +78,7 @@ class NotificationRepository {
   }
 
   Future<void> deleteNotification(String id) async {
-    final String url = '${baseUrl}notification/delete/${id.toString()}';
+    final String url = '${baseUrl}notifications/$id';
     print(url);
 
     try {
@@ -101,7 +101,7 @@ class NotificationRepository {
   }
 
   Future<void> createNotificationApp(String title, String body, String email) async {
-    final String url = '${baseUrl}notification/create';
+    final String url = '${baseUrl}notifications';
     print(url);
 
     final bodyJSON =

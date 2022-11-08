@@ -9,22 +9,6 @@ part of 'room_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$RoomController on _RoomControllerBase, Store {
-  late final _$sprinklersValueAtom =
-      Atom(name: '_RoomControllerBase.sprinklersValue', context: context);
-
-  @override
-  bool get sprinklersValue {
-    _$sprinklersValueAtom.reportRead();
-    return super.sprinklersValue;
-  }
-
-  @override
-  set sprinklersValue(bool value) {
-    _$sprinklersValueAtom.reportWrite(value, super.sprinklersValue, () {
-      super.sprinklersValue = value;
-    });
-  }
-
   late final _$roomListAtom =
       Atom(name: '_RoomControllerBase.roomList', context: context);
 
@@ -59,24 +43,9 @@ mixin _$RoomController on _RoomControllerBase, Store {
         name, email, alarmOn, notificationOn, sprinklersOn, sensorValue));
   }
 
-  late final _$_RoomControllerBaseActionController =
-      ActionController(name: '_RoomControllerBase', context: context);
-
-  @override
-  dynamic setSprinklersValue(bool value) {
-    final _$actionInfo = _$_RoomControllerBaseActionController.startAction(
-        name: '_RoomControllerBase.setSprinklersValue');
-    try {
-      return super.setSprinklersValue(value);
-    } finally {
-      _$_RoomControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
   @override
   String toString() {
     return '''
-sprinklersValue: ${sprinklersValue},
 roomList: ${roomList}
     ''';
   }

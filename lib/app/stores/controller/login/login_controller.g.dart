@@ -89,27 +89,8 @@ mixin _$LoginController on _LoginControllerBase, Store {
     });
   }
 
-  late final _$doLoginAsyncAction =
-      AsyncAction('_LoginControllerBase.doLogin', context: context);
-
-  @override
-  Future<LoginResponseModel?> doLogin(String login, String password) {
-    return _$doLoginAsyncAction.run(() => super.doLogin(login, password));
-  }
-
   late final _$_LoginControllerBaseActionController =
       ActionController(name: '_LoginControllerBase', context: context);
-
-  @override
-  String? getErrorPassword(String text) {
-    final _$actionInfo = _$_LoginControllerBaseActionController.startAction(
-        name: '_LoginControllerBase.getErrorPassword');
-    try {
-      return super.getErrorPassword(text);
-    } finally {
-      _$_LoginControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
 
   @override
   String? getErrorName(String text) {

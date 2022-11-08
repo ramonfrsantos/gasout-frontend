@@ -53,17 +53,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   setValues() {
-    setState(() {
-      widget.averageValue > 10
+      widget.averageValue > 0
           ? alarmValue = true
           : alarmValue = false;
-      widget.averageValue > 10
+      widget.averageValue > 0
           ? notificationValue = true
           : notificationValue = false;
-      if(widget.averageValue < 80){
-        roomController.sprinklersValue = false;
-      }
-    });
   }
 
   @override
@@ -140,16 +135,21 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               name: "Sprinklers",
                               value: roomController.sprinklersValue,
                               onChanged: (value) {
+                                print("VALUE: $value");
+
                                 // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
-                                if (valorMedioDiarioPorCento >= 80) {
+                                if (valorMedioDiarioPorCento >= 50) {
                                   roomController.sprinklersValue == false
                                       ? _showAlertDialog(context)
                                       : setState(() {
                                           roomController.sprinklersValue =
                                               value;
                                         });
+
+                                  print(
+                                      "SPRINKLERS: ${roomController.sprinklersValue}");
                                 } else {
-                                  roomController.sprinklersValue = false;
+                                  roomController.sprinklersValue = value;
                                 }
                               },
                             ),

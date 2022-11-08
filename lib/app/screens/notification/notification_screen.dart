@@ -109,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                     onDismissed: (direction) {
                       var notificationChosen = notification;
-                      _showAlertDialog(context, notificationChosen.id);
+                      _showAlertDialog(context, notificationChosen.id, widget.email);
                     },
                     background: _deleteBgItem()
                   )
@@ -143,7 +143,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  _showAlertDialog(BuildContext context, String id) {
+  _showAlertDialog(BuildContext context, String? id, String? email) {
     Widget cancelaButton = TextButton(
       child: Text("NÃO", style: GoogleFonts.muli(
           fontSize: 16,
