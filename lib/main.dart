@@ -318,16 +318,23 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
-    widget.client.server = "aqltv1hod5z6j-ats.iot.us-east-1.amazonaws.com";
-    widget.client.websocketProtocols = ['mqtt'];
+
+    print("----------------------::: SERVER: " + widget.client.server);
 
     final MqttConnectMessage connMess =
         MqttConnectMessage().withClientIdentifier(uniqueId).startClean();
     widget.client.connectionMessage = connMess;
 
-    print("----------------------::: SERVER: " + widget.client.server);
+    try {
+      await widget.client.connect("","");
+    } on NoConnectionException catch (e) {
+      print('EXAMPLE::client exception - $e');
+      widget.client.disconnect();
+    } on SocketException catch (e) {
+      print('EXAMPLE::socket exception - $e');
+      widget.client.disconnect();
+    }
 
-    await widget.client.connect();
     if (widget.client.connectionStatus!.state ==
         MqttConnectionState.connected) {
       print("Conectado ao AWS com sucesso.");

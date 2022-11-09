@@ -316,7 +316,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             title: 'GasOut',
                                             username: response?.userName,
                                             email: response?.login,
-                                        client: new MqttServerClient('aulwdm3oigmf5-ats.iot.us-east-1.amazonaws.com', ''),
+                                        client: new MqttServerClient('aqltv1hod5z6j-ats.iot.us-east-1.amazonaws.com', ''),
                                         isConnected: false
                                           )),
                                 );
