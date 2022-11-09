@@ -155,9 +155,9 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             height: 26,
           ),
           onPressed: () {
-            String url1 =
+            String urlWpp =
                 'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
-            launchUrlString(url1);
+            launchUrlString(urlWpp, mode: LaunchMode.externalApplication);
           },
         ),
         KFDrawerItem.initWithPage(
@@ -172,9 +172,9 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             height: 26,
           ),
           onPressed: () {
-            String url2 =
-                'https://telegram.me/@gasoutbot';
-            launchUrlString(url2);
+            String urlTg =
+                'https://telegram.me/gasoutbot';
+            launchUrlString(urlTg, mode: LaunchMode.externalApplication);
           },
         ),
       ],
@@ -311,14 +311,13 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     widget.client.securityContext = context;
     widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 20;
+    widget.client.keepAlivePeriod = 60;
     widget.client.port = 8883;
     widget.client.secure = true;
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
-    widget.client.server = "aqltv1hod5z6j-ats.iot.us-east-1.amazonaws.com";
-    widget.client.clientIdentifier = "sensor-de-gas";
+    // widget.client.clientIdentifier = "sensor-de-gas";
 
     final connMess =
         MqttConnectMessage()
@@ -331,25 +330,25 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     print("MESSAGE: " + widget.client.connectionMessage.toString());
     print("PORT: " + widget.client.port.toString());
-    print("CLIENT: " + widget.client.clientIdentifier.isEmpty.toString());
+    print("CLIENT: " + widget.client.clientIdentifier.isNotEmpty.toString());
 
     try {
       await widget.client.connect();
     } on NoConnectionException catch (e) {
       // Raised by the client when connection fails.
       print('Client exception - $e');
-      widget.client.disconnect();
+      // widget.client.disconnect();
     } on SocketException catch (e) {
       // Raised by the socket layer
       print('Socket exception - $e');
-      widget.client.disconnect();
+      // _disconnect();
     }
 
     if (widget.client.connectionStatus!.state ==
         MqttConnectionState.connected) {
       print("Conectado ao AWS com sucesso.");
     } else {
-      widget.client.disconnect();
+      // _disconnect();
       print("Erro ao conectar com a AWS.");
       return false;
     }
