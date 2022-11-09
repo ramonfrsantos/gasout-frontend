@@ -159,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final userEmail = json.decode(recMessString)['message']['email'];
 
           mqttSensorValue = sensorValue.toInt();
+          print(mqttSensorValue);
 
           if (room.name.toLowerCase() == roomName.toString().toLowerCase() && room.userEmail.toLowerCase() == userEmail.toString().toLowerCase()) {
             if (mqttSensorValue > 0 && mqttSensorValue < 52) {
@@ -206,6 +207,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     await notificationRepository.createNotificationFirebase(
         title, body, widget.email, token);
+
+    // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
+    roomController.getUserRooms(widget.email!);
+    
+    print(_roomController.roomList![0]);
   }
 
   Widget _title() {

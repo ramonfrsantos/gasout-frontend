@@ -36,15 +36,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-    // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
-    roomController.roomList!;
 
     // COLOCA O VALOR DO SENSOR QUE RETORNA DA API NA VARIÁVEL
     if(roomController.roomList!.isNotEmpty){
       widget.averageValue = roomController.roomList![0].sensorValue;
     }
 
-    print(widget.averageValue);
+    print("Valor medio diario: " + widget.averageValue.toString());
 
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
