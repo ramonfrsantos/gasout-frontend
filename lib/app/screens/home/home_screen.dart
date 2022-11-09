@@ -171,7 +171,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               sprinklersOn = false;
             }
 
-            print("GEROOOOOOU NOTIFICAÇÃAAAAAAAAOOOOOO!!!!!!!!!!!");
             _generateNotification(mqttSensorValue);
 
             _roomController.sendRoomSensorValue(room.name, widget.email!,

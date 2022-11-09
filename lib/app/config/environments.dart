@@ -10,6 +10,6 @@ mixin Environment {
   static final prod = AppConfig(
     appName: '[PROD] GasOut',
     appEnvironment: AppEnvironment.production,
-    apiBaseUrl: '',
+    apiBaseUrl: 'https://34.201.149.55:8888/',
   );
 }
