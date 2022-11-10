@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final roomName = json.decode(recMessString)['message']['roomName'];
           final userEmail = json.decode(recMessString)['message']['email'];
 
-          mqttSensorValue = sensorValue.toInt();
+          mqttSensorValue = (sensorValue/10.0).toInt();
           print(mqttSensorValue);
 
           if (room.name.toLowerCase() == roomName.toString().toLowerCase() && room.userEmail.toLowerCase() == userEmail.toString().toLowerCase()) {
