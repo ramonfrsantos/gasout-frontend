@@ -106,7 +106,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     print(widget.username);
     print(widget.email);
 
-    idTextController.text = "sensor-de-gas";
+    idTextController.text = "ClientID";
 
     if (widget.isConnected == false) {
       _connect();
@@ -144,23 +144,23 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         //   icon: Icon(Icons.trending_up, color: Colors.white),
         //   page: StatsScreen(),
         // ),
-        KFDrawerItem.initWithPage(
-          text: Text(
-            'Suporte técnico',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          icon: Image.asset(
-            "assets/images/icWhatsApp.png",
-            color: Colors.white,
-            width: 26,
-            height: 26,
-          ),
-          onPressed: () {
-            String urlWpp =
-                'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
-            launchUrlString(urlWpp);
-          },
-        ),
+        // KFDrawerItem.initWithPage(
+        //   text: Text(
+        //     'Suporte técnico',
+        //     style: TextStyle(color: Colors.white, fontSize: 18),
+        //   ),
+        //   icon: Image.asset(
+        //     "assets/images/icWhatsApp.png",
+        //     color: Colors.white,
+        //     width: 26,
+        //     height: 26,
+        //   ),
+        //   onPressed: () {
+        //     String urlWpp =
+        //         'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
+        //     launchUrlString(urlWpp);
+        //   },
+        // ),
         KFDrawerItem.initWithPage(
           text: Text(
             'Chat Telegram',
@@ -212,46 +212,6 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             ],
           ),
         ),
-        // footer: Row(
-        //   children: [
-        //     Padding(
-        //       padding: EdgeInsets.only(top: 30, left: 20),
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //         children: [
-        //           Container(
-        //             width: 200,
-        //             height: 50,
-        //             child: widget.isConnected
-        //                 ? TextButton(
-        //                     onPressed: _disconnect,
-        //                     child: Text("Desconectar MQTT"))
-        //                 : TextFormField(
-        //                     controller: idTextController,
-        //                     enabled: !widget.isConnected,
-        //                     decoration: InputDecoration(
-        //                         border: InputBorder.none,
-        //                         contentPadding:
-        //                             EdgeInsets.only(left: 10, top: 5),
-        //                         labelText: 'MQTT Client ID',
-        //                         labelStyle: TextStyle(fontSize: 10),
-        //                         suffixIcon: IconButton(
-        //                             onPressed: _connect,
-        //                             icon: Icon(Icons.subdirectory_arrow_left))),
-        //                   ),
-        //             decoration: BoxDecoration(
-        //               borderRadius: BorderRadius.all(Radius.circular(20)),
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //           SizedBox(
-        //             width: 20,
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //   ],
-        // ),
         decoration: BoxDecoration(
           color: ConstantColors.primaryColor,
         ),
@@ -262,32 +222,8 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   void _connect() async {
     if (idTextController.text.trim().isNotEmpty) {
       print(idTextController.text.trim());
-      // ProgressDialog progressDialog = ProgressDialog(
-      //   context,
-      //   blur: 0,
-      //   dialogTransitionType: DialogTransitionType.Shrink,
-      //   dismissable: false,
-      // );
-      // progressDialog.setLoadingWidget(CircularProgressIndicator(
-      //   valueColor: AlwaysStoppedAnimation(Colors.red),
-      // ));
-      // progressDialog.setMessage(
-      //     Text("Aguarde, conectando ao AWS MQTT Broker..."));
-      // progressDialog.setTitle(Text("Conectando"));
-      // progressDialog.show();
 
       widget.isConnected = await mqttConnect(idTextController.text.trim());
-      // progressDialog.dismiss();
-
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => MainWidget(
-      //             username: widget.username,
-      //             email: widget.email,
-      //             title: 'GasOut',
-      //             client: widget.client,
-      //             isConnected: widget.isConnected)));
     }
   }
 
@@ -312,7 +248,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     widget.client.securityContext = context;
     widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 180;
+    widget.client.keepAlivePeriod = 300;
     widget.client.port = 8883;
     widget.client.secure = true;
     widget.client.onConnected = onConnected;
@@ -325,15 +261,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         MqttConnectMessage().withClientIdentifier(uniqueId).startClean();
     widget.client.connectionMessage = connMess;
 
-    try {
-      await widget.client.connect("","");
-    } on NoConnectionException catch (e) {
-      print('EXAMPLE::client exception - $e');
-      widget.client.disconnect();
-    } on SocketException catch (e) {
-      print('EXAMPLE::socket exception - $e');
-      widget.client.disconnect();
-    }
+    await widget.client.connect();
 
     if (widget.client.connectionStatus!.state ==
         MqttConnectionState.connected) {
