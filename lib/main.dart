@@ -312,7 +312,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     widget.client.securityContext = context;
     widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 20;
+    widget.client.keepAlivePeriod = 180;
     widget.client.port = 8883;
     widget.client.secure = true;
     widget.client.onConnected = onConnected;
