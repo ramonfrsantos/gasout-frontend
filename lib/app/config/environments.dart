@@ -4,12 +4,12 @@ mixin Environment {
   static final dev = AppConfig(
     appName: '[DEV] GasOut',
     appEnvironment: AppEnvironment.development,
-    apiBaseUrl: 'http://18.212.246.112:8888/',
+    apiBaseUrl: 'http://34.234.71.133:8888/',
   );
 
   static final prod = AppConfig(
     appName: '[PROD] GasOut',
     appEnvironment: AppEnvironment.production,
-    apiBaseUrl: 'https://34.201.149.55:8888/',
+    apiBaseUrl: '',
   );
 }

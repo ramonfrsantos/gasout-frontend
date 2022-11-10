@@ -188,18 +188,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String title = "";
     String body = "";
 
-    if (mqttReceivedValue >= 0 && mqttReceivedValue <= 10) {
+    if (mqttReceivedValue <= 0) {
       title = "Apenas atualização de status...";
       body = "Tudo em paz! Sem vazamento de gás no momento.";
-    } else if (mqttReceivedValue > 10 && mqttReceivedValue <= 40) {
+    } else if (mqttReceivedValue > 0 && mqttReceivedValue < 25) {
       title =
           "Atenção! Verifique as opções de monitoramento..."; // Colocar emoji de sirene
       body = "Detectamos nível BAIXO de vazamento em seu local!";
-    } else if (mqttReceivedValue > 40 && mqttReceivedValue < 80) {
+    } else if (mqttReceivedValue >= 25 && mqttReceivedValue < 51) {
       title =
           "🚨 Atenção! Verifique as opções de monitoramento "; // Colocar emoji de sirene
       body = "Detectamos nível MÉDIO de vazamento em seu local!";
-    } else if (mqttReceivedValue >= 80) {
+    } else if (mqttReceivedValue >= 51) {
       title = "Detectamos nível ALTO de vazamento em seu local!";
       body =
           "Entre agora em opções de monitoramento do seu cômodo para acionamento dos SPRINKLERS ou acione o SUPORTE TÉCNICO.";
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
     roomController.getUserRooms(widget.email!);
-    
+
     print(_roomController.roomList![0]);
   }
 
