@@ -10,13 +10,13 @@ import 'package:kf_drawer/kf_drawer.dart';
 import 'package:gas_out_app/app/helpers/dependency_injection.dart' as di;
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'app/config/app_config.dart';
 import 'app/config/environments.dart';
 import 'app/constants/gasout_constants.dart';
 import 'app/screens/home/home_screen.dart';
 import 'app/screens/notification/notification_screen.dart';
-import 'app/screens/stats/stats_screen.dart';
 import 'data/firebase_messaging/custom_firebase_messaging.dart';
 import 'data/model/class_builder_model.dart';
 import 'data/repositories/notification/notification_repository.dart';
@@ -82,7 +82,7 @@ class MainWidget extends StatefulWidget {
   final String? username;
   final String? email;
   final MqttServerClient client;
-  late bool isConnected;
+  late final bool isConnected;
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -135,17 +135,17 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             email: widget.email,
           ),
         ),
-        KFDrawerItem.initWithPage(
-          text: Text(
-            'Análise Geral',
-            style: TextStyle(color: Colors.white, fontSize: 18),
-          ),
-          icon: Icon(Icons.trending_up, color: Colors.white),
-          page: StatsScreen(),
-        ),
         // KFDrawerItem.initWithPage(
         //   text: Text(
-        //     'Acionar Suporte',
+        //     'Análise Geral',
+        //     style: TextStyle(color: Colors.white, fontSize: 18),
+        //   ),
+        //   icon: Icon(Icons.trending_up, color: Colors.white),
+        //   page: StatsScreen(),
+        // ),
+        // KFDrawerItem.initWithPage(
+        //   text: Text(
+        //     'Suporte técnico',
         //     style: TextStyle(color: Colors.white, fontSize: 18),
         //   ),
         //   icon: Image.asset(
@@ -155,11 +155,28 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         //     height: 26,
         //   ),
         //   onPressed: () {
-        //     String url =
+        //     String urlWpp =
         //         'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
-        //     launchUrlString(url);
+        //     launchUrlString(urlWpp);
         //   },
         // ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Chat Telegram',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          icon: Image.asset(
+            "assets/images/icTelegram.png",
+            color: Colors.white,
+            width: 26,
+            height: 26,
+          ),
+          onPressed: () {
+            String urlTg =
+                'https://telegram.me/gasoutbot';
+            launchUrlString(urlTg, mode: LaunchMode.externalApplication);
+          },
+        ),
       ],
     );
   }
@@ -194,46 +211,6 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             ],
           ),
         ),
-        // footer: Row(
-        //   children: [
-        //     Padding(
-        //       padding: EdgeInsets.only(top: 30, left: 20),
-        //       child: Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //         children: [
-        //           Container(
-        //             width: 200,
-        //             height: 50,
-        //             child: widget.isConnected
-        //                 ? TextButton(
-        //                     onPressed: _disconnect,
-        //                     child: Text("Desconectar MQTT"))
-        //                 : TextFormField(
-        //                     controller: idTextController,
-        //                     enabled: !widget.isConnected,
-        //                     decoration: InputDecoration(
-        //                         border: InputBorder.none,
-        //                         contentPadding:
-        //                             EdgeInsets.only(left: 10, top: 5),
-        //                         labelText: 'MQTT Client ID',
-        //                         labelStyle: TextStyle(fontSize: 10),
-        //                         suffixIcon: IconButton(
-        //                             onPressed: _connect,
-        //                             icon: Icon(Icons.subdirectory_arrow_left))),
-        //                   ),
-        //             decoration: BoxDecoration(
-        //               borderRadius: BorderRadius.all(Radius.circular(20)),
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //           SizedBox(
-        //             width: 20,
-        //           )
-        //         ],
-        //       ),
-        //     ),
-        //   ],
-        // ),
         decoration: BoxDecoration(
           color: ConstantColors.primaryColor,
         ),
@@ -244,32 +221,8 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   void _connect() async {
     if (idTextController.text.trim().isNotEmpty) {
       print(idTextController.text.trim());
-      // ProgressDialog progressDialog = ProgressDialog(
-      //   context,
-      //   blur: 0,
-      //   dialogTransitionType: DialogTransitionType.Shrink,
-      //   dismissable: false,
-      // );
-      // progressDialog.setLoadingWidget(CircularProgressIndicator(
-      //   valueColor: AlwaysStoppedAnimation(Colors.red),
-      // ));
-      // progressDialog.setMessage(
-      //     Text("Aguarde, conectando ao AWS MQTT Broker..."));
-      // progressDialog.setTitle(Text("Conectando"));
-      // progressDialog.show();
 
       widget.isConnected = await mqttConnect(idTextController.text.trim());
-      // progressDialog.dismiss();
-
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => MainWidget(
-      //             username: widget.username,
-      //             email: widget.email,
-      //             title: 'GasOut',
-      //             client: widget.client,
-      //             isConnected: widget.isConnected)));
     }
   }
 
@@ -294,18 +247,21 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     widget.client.securityContext = context;
     widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 20;
+    widget.client.keepAlivePeriod = 300;
     widget.client.port = 8883;
     widget.client.secure = true;
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
 
+    print("----------------------::: SERVER: " + widget.client.server);
+
     final MqttConnectMessage connMess =
         MqttConnectMessage().withClientIdentifier(uniqueId).startClean();
     widget.client.connectionMessage = connMess;
 
     await widget.client.connect();
+
     if (widget.client.connectionStatus!.state ==
         MqttConnectionState.connected) {
       print("Conectado ao AWS com sucesso.");

@@ -29,13 +29,13 @@ mixin _$RoomController on _RoomControllerBase, Store {
       Atom(name: '_RoomControllerBase.roomList', context: context);
 
   @override
-  List<RoomResponseModel>? get roomList {
+  List<DataRoom>? get roomList {
     _$roomListAtom.reportRead();
     return super.roomList;
   }
 
   @override
-  set roomList(List<RoomResponseModel>? value) {
+  set roomList(List<DataRoom>? value) {
     _$roomListAtom.reportWrite(value, super.roomList, () {
       super.roomList = value;
     });

@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _streamBuilderMqtt(RoomResponseModel room) {
+  Widget _streamBuilderMqtt(DataRoom room) {
     List<MqttReceivedMessage<MqttMessage>>? list;
 
     return StreamBuilder(
@@ -158,7 +158,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final roomName = json.decode(recMessString)['message']['roomName'];
           final userEmail = json.decode(recMessString)['message']['email'];
 
-          mqttSensorValue = sensorValue.toInt();
+          mqttSensorValue = (sensorValue/10.0).toInt();
+          print(mqttSensorValue);
 
           if (room.name.toLowerCase() == roomName.toString().toLowerCase() && room.userEmail.toLowerCase() == userEmail.toString().toLowerCase()) {
             if (mqttSensorValue > 0 && mqttSensorValue < 52) {
@@ -187,18 +188,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     String title = "";
     String body = "";
 
-    if (mqttReceivedValue >= 0 && mqttReceivedValue <= 5) {
+    if (mqttReceivedValue <= 0) {
       title = "Apenas atualização de status...";
       body = "Tudo em paz! Sem vazamento de gás no momento.";
-    } else if (mqttReceivedValue > 5 && mqttReceivedValue <= 28) {
+    } else if (mqttReceivedValue > 0 && mqttReceivedValue < 25) {
       title =
           "Atenção! Verifique as opções de monitoramento..."; // Colocar emoji de sirene
       body = "Detectamos nível BAIXO de vazamento em seu local!";
-    } else if (mqttReceivedValue > 28 && mqttReceivedValue < 50) {
+    } else if (mqttReceivedValue >= 25 && mqttReceivedValue < 51) {
       title =
           "🚨 Atenção! Verifique as opções de monitoramento "; // Colocar emoji de sirene
       body = "Detectamos nível MÉDIO de vazamento em seu local!";
-    } else if (mqttReceivedValue >= 50) {
+    } else if (mqttReceivedValue >= 51) {
       title = "Detectamos nível ALTO de vazamento em seu local!";
       body =
           "Entre agora em opções de monitoramento do seu cômodo para acionamento dos SPRINKLERS ou acione o SUPORTE TÉCNICO.";
@@ -206,6 +207,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     await notificationRepository.createNotificationFirebase(
         title, body, widget.email, token);
+
+    // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
+    roomController.getUserRooms(widget.email!);
+
+    print(_roomController.roomList![0]);
   }
 
   Widget _title() {

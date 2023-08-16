@@ -18,7 +18,7 @@ abstract class _RoomControllerBase with Store {
   }
 
   @observable
-  List<RoomResponseModel>? roomList = [];
+  List<DataRoom>? roomList = [];
 
   @action
   getUserRooms(String? login) async {

@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1070910061371",
-    "project_id": "gascheckapp-cf681",
-    "storage_bucket": "gascheckapp-cf681.appspot.com"
+    "project_number": "978237420989",
+    "project_id": "gas-out-app",
+    "storage_bucket": "gas-out-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1070910061371:android:ded2810b624950bdc0951e",
+        "mobilesdk_app_id": "1:978237420989:android:02efe8d189f03534b40ed4",
         "android_client_info": {
-          "package_name": "com.gasout.app.br"
+          "package_name": "com.gasout.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1070910061371-bu98h24ai7kasrugm6143bt6v91hv1lg.apps.googleusercontent.com",
+          "client_id": "978237420989-h1l21eki271qds11rav1otf9bsbu6s64.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCS02tCuQZLH2ESgeVgFNvrmckzeOzLSkI"
+          "current_key": "AIzaSyB3mfrQ0tma9A5WZFetM5ejYrAa1dobBVA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1070910061371-bu98h24ai7kasrugm6143bt6v91hv1lg.apps.googleusercontent.com",
+              "client_id": "978237420989-h1l21eki271qds11rav1otf9bsbu6s64.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

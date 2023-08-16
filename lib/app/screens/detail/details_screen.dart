@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../constants/gasout_constants.dart';
 import '../../helpers/global.dart';
 import '../../stores/controller/notification/notification_controller.dart';
-import '../../stores/controller/room/room_controller.dart';
 
 class DetailsScreen extends StatefulWidget {
   final imgPath;
@@ -36,15 +35,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
-    // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
-    roomController.roomList!;
 
     // COLOCA O VALOR DO SENSOR QUE RETORNA DA API NA VARIÁVEL
     if(roomController.roomList!.isNotEmpty){
       widget.averageValue = roomController.roomList![0].sensorValue;
     }
 
-    print(widget.averageValue);
+    print("Valor medio diario: " + widget.averageValue.toString());
 
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
@@ -54,13 +51,15 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   setValues() {
     setState(() {
-      widget.averageValue > 10
-          ? alarmValue = true
-          : alarmValue = false;
-      widget.averageValue > 10
+      widget.averageValue > 0
           ? notificationValue = true
           : notificationValue = false;
-      if(widget.averageValue < 80){
+
+      widget.averageValue > 0
+          ? alarmValue = true
+          : alarmValue = false;
+
+      if(widget.averageValue <= 50){
         roomController.sprinklersValue = false;
       }
     });
@@ -141,7 +140,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               value: roomController.sprinklersValue,
                               onChanged: (value) {
                                 // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
-                                if (valorMedioDiarioPorCento >= 80) {
+                                if (valorMedioDiarioPorCento >= 51) {
                                   roomController.sprinklersValue == false
                                       ? _showAlertDialog(context)
                                       : setState(() {

@@ -11,8 +11,8 @@ class NotificationRepository {
 
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<List<NotificationResponseModel>> getAllNotifications() async {
-    final String url = '${baseUrl}notification/find-all';
+  Future<List<DataNotification>> getAllNotifications() async {
+    final String url = '${baseUrl}notifications';
     print(url);
     try {
       var response = await client.get(
@@ -29,11 +29,11 @@ class NotificationRepository {
         print(response.data);
       }
 
-      List<NotificationResponseModel> list = [];
+      List<DataNotification> list = [];
 
-      response.data.map((el) {
+      response.data['data'].map((el) {
         list.add(
-          NotificationResponseModel.fromMap(el),
+          DataNotification.fromJson(el),
         );
       }).toList();
 
@@ -44,8 +44,8 @@ class NotificationRepository {
     }
   }
 
-  Future<List<NotificationResponseModel>> getUserNotifications(String login) async {
-    final String url = '${baseUrl}notification/find-all-recent/$login';
+  Future<List<DataNotification>> getUserNotifications(String email) async {
+    final String url = '${baseUrl}notifications/recent/$email';
     print(url);
     try {
       var response = await client.get(
@@ -62,11 +62,11 @@ class NotificationRepository {
         print(response.data);
       }
 
-      List<NotificationResponseModel> list = [];
+      List<DataNotification> list = [];
 
-      response.data.map((el) {
+      response.data['data'].map((el) {
         list.add(
-          NotificationResponseModel.fromMap(el),
+          DataNotification.fromJson(el),
         );
       }).toList();
 
@@ -78,7 +78,7 @@ class NotificationRepository {
   }
 
   Future<void> deleteNotification(String id) async {
-    final String url = '${baseUrl}notification/delete/${id.toString()}';
+    final String url = '${baseUrl}notifications/$id';
     print(url);
 
     try {
@@ -101,7 +101,7 @@ class NotificationRepository {
   }
 
   Future<void> createNotificationApp(String title, String body, String email) async {
-    final String url = '${baseUrl}notification/create';
+    final String url = '${baseUrl}notifications';
     print(url);
 
     final bodyJSON =
@@ -132,7 +132,7 @@ class NotificationRepository {
     }
   }
 
-  Future<NotificationModel?> createNotificationFirebase(
+  Future<DataNotification?> createNotificationFirebase(
       String title, String body, String? email, String token) async {
     print(token);
 
@@ -162,7 +162,7 @@ class NotificationRepository {
 
       createNotificationApp(title, body, email!);
 
-      return NotificationModel.fromJson(response.data);
+      return DataNotification.fromJson(response.data['data']);
     } catch (e) {
       print(e.toString());
       throw ('Erro na conexão');

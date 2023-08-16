@@ -1,37 +1,49 @@
 import 'dart:convert';
 
 class NotificationResponseModel {
-  final String id;
-  final String title;
-  final String message;
-  final String date;
-  NotificationResponseModel({
-    required this.id,
+  late DataNotification data;
+
+  NotificationResponseModel({required this.data});
+
+  NotificationResponseModel.fromJson(Map<String, dynamic> json) {
+    data = (json['data'] != null ? new DataNotification.fromJson(json['data']) : null)!;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['data'] = this.data.toJson();
+
+    return data;
+  }
+}
+
+class DataNotification {
+  String? id;
+  late String title;
+  late String message;
+  late String date;
+
+  DataNotification({
+    this.id,
     required this.title,
-    required this.message,
     required this.date,
+    required this.message,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-      'message': message,
-      'date': date,
-    };
+  DataNotification.fromJson(Map<String, dynamic> json) {
+        id = json['id'];
+        title = json['title'];
+        message = json['message'];
+        date = json['date'];
   }
 
-  factory NotificationResponseModel.fromMap(Map<String, dynamic> map) {
-    return NotificationResponseModel(
-      id: map['id']?.toInt() ?? 0,
-      title: map['title'] ?? '',
-      message: map['message'] ?? '',
-      date: map['date'] ?? '',
-    );
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['id'] = this.id;
+    data['title'] = this.title;
+    data['message'] = this.message;
+    data['date'] = this.date;
+
+    return data;
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory NotificationResponseModel.fromJson(String source) =>
-      NotificationResponseModel.fromMap(json.decode(source));
 }
