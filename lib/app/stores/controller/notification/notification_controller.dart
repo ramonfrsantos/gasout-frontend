@@ -9,7 +9,7 @@ abstract class _NotificationControllerBase with Store {
   NotificationRepository _repository = NotificationRepository();
 
   @observable
-  List<NotificationResponseModel>? notificationList;
+  List<DataNotification>? notificationList;
 
   @action
   getUserNotifications(String? login) async {

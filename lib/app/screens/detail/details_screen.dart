@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../constants/gasout_constants.dart';
 import '../../helpers/global.dart';
 import '../../stores/controller/notification/notification_controller.dart';
-import '../../stores/controller/room/room_controller.dart';
 
 class DetailsScreen extends StatefulWidget {
   final imgPath;

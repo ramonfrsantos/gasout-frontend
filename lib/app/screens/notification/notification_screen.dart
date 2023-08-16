@@ -109,7 +109,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     ),
                     onDismissed: (direction) {
                       var notificationChosen = notification;
-                      _showAlertDialog(context, notificationChosen.id);
+                      _showAlertDialog(context, notificationChosen.id!);
                     },
                     background: _deleteBgItem()
                   )

@@ -13,13 +13,13 @@ mixin _$NotificationController on _NotificationControllerBase, Store {
       name: '_NotificationControllerBase.notificationList', context: context);
 
   @override
-  List<NotificationResponseModel>? get notificationList {
+  List<DataNotification>? get notificationList {
     _$notificationListAtom.reportRead();
     return super.notificationList;
   }
 
   @override
-  set notificationList(List<NotificationResponseModel>? value) {
+  set notificationList(List<DataNotification>? value) {
     _$notificationListAtom.reportWrite(value, super.notificationList, () {
       super.notificationList = value;
     });

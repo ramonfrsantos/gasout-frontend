@@ -17,7 +17,6 @@ import 'app/config/environments.dart';
 import 'app/constants/gasout_constants.dart';
 import 'app/screens/home/home_screen.dart';
 import 'app/screens/notification/notification_screen.dart';
-import 'app/screens/stats/stats_screen.dart';
 import 'data/firebase_messaging/custom_firebase_messaging.dart';
 import 'data/model/class_builder_model.dart';
 import 'data/repositories/notification/notification_repository.dart';
@@ -83,7 +82,7 @@ class MainWidget extends StatefulWidget {
   final String? username;
   final String? email;
   final MqttServerClient client;
-  late bool isConnected;
+  late final bool isConnected;
 
   @override
   _MainWidgetState createState() => _MainWidgetState();

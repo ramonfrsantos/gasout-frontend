@@ -6,7 +6,7 @@ import 'package:gas_out_app/data/model/notiification/notification_response_model
 import '../../../app/config/app_config.dart';
 import '../../../app/constants/gasout_constants.dart';
 import '../../model/notiification/notification_firebase_model.dart';
-import '../../model/user/UserModel.dart';
+import '../../model/user/user_model.dart';
 
 class UserRepository {
   final Dio client = Dio();

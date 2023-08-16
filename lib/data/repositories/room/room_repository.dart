@@ -10,7 +10,7 @@ class RoomRepository {
 
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<List<RoomResponseModel>> getUserRooms(String email) async {
+  Future<List<DataRoom>> getUserRooms(String email) async {
     final String url = '${baseUrl}rooms/find-all/$email';
     print(url);
     try {
@@ -25,14 +25,14 @@ class RoomRepository {
       );
 
       if(response.statusCode == 200){
-        print(response.data);
+        print(response.data['data']);
       }
 
-      List<RoomResponseModel> list = [];
+      List<DataRoom> list = [];
 
-      response.data.map((el) {
+      response.data['data'].map((el) {
         list.add(
-          RoomResponseModel.fromMap(el),
+          DataRoom.fromJson(el),
         );
       }).toList();
 
@@ -73,8 +73,8 @@ class RoomRepository {
       if(response.statusCode == 200){
         print(response.data);
       }
-      // var jsonData = json.decode(response.data);
-      // print(jsonData);
+      // var jsonDataRoom = json.decode(response.data);
+      // print(jsonDataRoom);
     } catch (e) {
       print(e.toString());
       throw ('Erro na conexão');
