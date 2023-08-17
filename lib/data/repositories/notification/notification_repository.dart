@@ -25,8 +25,9 @@ class NotificationRepository {
         ),
       );
 
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
 
       List<DataNotification> list = [];
@@ -58,8 +59,9 @@ class NotificationRepository {
         ),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
 
       List<DataNotification> list = [];
@@ -91,7 +93,7 @@ class NotificationRepository {
           },
         ),
       );
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print('Notificação de id: $id excluida com sucesso.');
       }
     } catch (e) {
@@ -100,7 +102,8 @@ class NotificationRepository {
     }
   }
 
-  Future<void> createNotificationApp(String title, String body, String email) async {
+  Future<void> createNotificationApp(
+      String title, String body, String email) async {
     final String url = '${baseUrl}notifications';
     print(url);
 
@@ -121,8 +124,9 @@ class NotificationRepository {
         ),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
       // var jsonData = json.decode(response.data);
       // print(jsonData);
@@ -154,8 +158,7 @@ class NotificationRepository {
         options: Options(
           headers: {
             'Content-Type': 'application/json',
-            'Authorization':
-            ConstantToken.tokenFirebase
+            'Authorization': ConstantToken.tokenFirebase
           },
         ),
       );

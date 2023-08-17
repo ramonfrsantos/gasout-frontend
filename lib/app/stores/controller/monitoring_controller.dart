@@ -38,7 +38,7 @@ abstract class _MonitoringControllerBase with Store {
           _start++;
           _totalHours = _start;
           monitoringTotalHours = _totalHours;
-          print(_totalHours);
+          // print(_totalHours);
         }
       },
     );

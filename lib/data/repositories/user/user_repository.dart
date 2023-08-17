@@ -18,11 +18,7 @@ class UserRepository {
     print(url);
 
     final bodyJSON =
-        jsonEncode({
-          "email": email,
-          "name": name,
-          "password": password
-        });
+        jsonEncode({"email": email, "name": name, "password": password});
 
     print(bodyJSON);
 
@@ -39,6 +35,7 @@ class UserRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
 
       return response.statusCode;
     } catch (e) {
@@ -63,6 +60,7 @@ class UserRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
 
       return response.data.toString();
     } catch (e) {
@@ -70,30 +68,6 @@ class UserRepository {
     }
     return null;
   }
-
-  // Future<String?> getVerificationCode(String email) async {
-  //   final String url = '${baseUrl}user/verification-code/$email';
-  //   print(url);
-  //
-  //   try {
-  //     var response = await client.get(
-  //       url,
-  //       options: Options(
-  //         headers: {
-  //           'Content-Type': 'application/json; charset=UTF-8',
-  //           'Authorization': 'Bearer ${ConstantToken.tokenRequests}'
-  //         },
-  //       ),
-  //     );
-  //
-  //     print(response.data);
-  //
-  //     return response.data.toString();
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  //   return null;
-  // }
 
   Future<bool?> checkIfCodesAreEqual(String? email, String newCode) async {
     final String url = '${baseUrl}users/check-codes-equal/$newCode/$email';
@@ -111,6 +85,7 @@ class UserRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
 
       return response.data;
     } catch (e) {
@@ -123,11 +98,7 @@ class UserRepository {
     final String url = '${baseUrl}users/refresh';
     print(url);
 
-    final bodyJSON =
-    jsonEncode({
-      "login": login,
-      "password": password
-    });
+    final bodyJSON = jsonEncode({"login": login, "password": password});
 
     print(bodyJSON);
 
@@ -144,6 +115,7 @@ class UserRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
 
       return response.statusCode;
     } catch (e) {

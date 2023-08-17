@@ -30,6 +30,7 @@ class LoginRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
       return LoginResponseModel.fromJson(response.data);
     } catch (e) {
       print(e.toString());

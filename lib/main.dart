@@ -82,7 +82,7 @@ class MainWidget extends StatefulWidget {
   final String? username;
   final String? email;
   final MqttServerClient client;
-  late final bool isConnected;
+  late bool isConnected;
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -90,7 +90,6 @@ class MainWidget extends StatefulWidget {
 
 class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   String statusText = "Status Text";
-  TextEditingController idTextController = TextEditingController();
   late KFDrawerController _drawerController;
   final NotificationRepository notificationRepository =
       NotificationRepository();
@@ -104,8 +103,6 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         widget.username, widget.email, widget.client, widget.isConnected);
     print(widget.username);
     print(widget.email);
-
-    idTextController.text = "ClientID";
 
     if (widget.isConnected == false) {
       _connect();
@@ -219,11 +216,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   }
 
   void _connect() async {
-    if (idTextController.text.trim().isNotEmpty) {
-      print(idTextController.text.trim());
-
-      widget.isConnected = await mqttConnect(idTextController.text.trim());
-    }
+    widget.isConnected = await mqttConnect();
   }
 
   // _disconnect() {
@@ -233,7 +226,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
   //   widget.client.disconnect();
   // }
 
-  Future<bool> mqttConnect(String uniqueId) async {
+  Future<bool> mqttConnect() async {
     setStatus("Conectando ao MQTT Broker...");
     ByteData rootCA = await rootBundle.load('assets/certs/RootCA.pem');
     ByteData deviceCert =
@@ -247,17 +240,17 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
 
     widget.client.securityContext = context;
     widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 300;
+    widget.client.keepAlivePeriod = 20;
     widget.client.port = 8883;
     widget.client.secure = true;
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
 
-    print("----------------------::: SERVER: " + widget.client.server);
+    print("-----------::: SERVER: " + widget.client.server);
 
     final MqttConnectMessage connMess =
-        MqttConnectMessage().withClientIdentifier(uniqueId).startClean();
+        MqttConnectMessage().withClientIdentifier("sensor_gas_1");
     widget.client.connectionMessage = connMess;
 
     await widget.client.connect();
@@ -269,8 +262,8 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
       return false;
     }
 
-    const topic = 'gas-out-topic';
-    widget.client.subscribe(topic, MqttQos.atMostOnce);
+    const topic = '\$aws/events/presence/+/sensor_gas_1';
+    widget.client.subscribe(topic, MqttQos.atLeastOnce);
 
     return true;
   }
