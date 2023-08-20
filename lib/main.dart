@@ -246,6 +246,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     widget.client.onConnected = onConnected;
     widget.client.onDisconnected = onDisconnected;
     widget.client.pongCallback = pong;
+    widget.client.server = "a2adms8kafyh61-ats.iot.us-east-1.amazonaws.com";
 
     print("-----------::: SERVER: " + widget.client.server);
 
@@ -262,7 +263,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
       return false;
     }
 
-    const topic = '\$aws/events/presence/+/sensor_gas_1';
+    const topic = 'gas_out_topic';
     widget.client.subscribe(topic, MqttQos.atLeastOnce);
 
     return true;
