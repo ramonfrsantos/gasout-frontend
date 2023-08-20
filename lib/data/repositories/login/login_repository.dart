@@ -9,11 +9,11 @@ class LoginRepository {
   final Dio client = Dio();
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<LoginResponseModel?> doLogin(String login, String password) async {
+  Future<LoginResponseModel?> doLogin(String login, String password, String tokenFirebase) async {
     final String url = '${baseUrl}auth/login';
     print(url);
 
-    final bodyJSON = jsonEncode({"login": login, "password": password});
+    final bodyJSON = jsonEncode({"login": login, "password": password, "tokenFirebase": tokenFirebase});
 
     print(bodyJSON);
 
@@ -30,6 +30,7 @@ class LoginRepository {
       );
 
       print(response.data);
+      print("HTTP " + response.statusCode.toString());
       return LoginResponseModel.fromJson(response.data);
     } catch (e) {
       print(e.toString());

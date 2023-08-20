@@ -25,8 +25,9 @@ class NotificationRepository {
         ),
       );
 
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
 
       List<DataNotification> list = [];
@@ -58,8 +59,9 @@ class NotificationRepository {
         ),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
 
       List<DataNotification> list = [];
@@ -91,78 +93,9 @@ class NotificationRepository {
           },
         ),
       );
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print('Notificação de id: $id excluida com sucesso.');
       }
-    } catch (e) {
-      print(e.toString());
-      throw ('Erro na conexão');
-    }
-  }
-
-  Future<void> createNotificationApp(String title, String body, String email) async {
-    final String url = '${baseUrl}notifications';
-    print(url);
-
-    final bodyJSON =
-        jsonEncode({"message": body, "title": title, "email": email});
-
-    print(bodyJSON);
-
-    try {
-      var response = await client.post(
-        url,
-        data: bodyJSON,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer ${ConstantToken.tokenRequests}'
-          },
-        ),
-      );
-
-      if(response.statusCode == 200){
-        print(response.data);
-      }
-      // var jsonData = json.decode(response.data);
-      // print(jsonData);
-    } catch (e) {
-      print(e.toString());
-      throw ('Erro na conexão');
-    }
-  }
-
-  Future<DataNotification?> createNotificationFirebase(
-      String title, String body, String? email, String token) async {
-    print(token);
-
-    final String url = 'https://fcm.googleapis.com/fcm/send';
-    print(url);
-
-    final bodyJSON = jsonEncode(
-      {
-        "registration_ids": [token],
-        "notification": {"title": title, "body": body}
-      },
-    );
-
-    print(bodyJSON);
-    try {
-      var response = await client.post(
-        url,
-        data: bodyJSON,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization':
-            ConstantToken.tokenFirebase
-          },
-        ),
-      );
-
-      createNotificationApp(title, body, email!);
-
-      return DataNotification.fromJson(response.data['data']);
     } catch (e) {
       print(e.toString());
       throw ('Erro na conexão');

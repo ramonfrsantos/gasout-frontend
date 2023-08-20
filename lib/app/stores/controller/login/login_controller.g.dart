@@ -93,8 +93,10 @@ mixin _$LoginController on _LoginControllerBase, Store {
       AsyncAction('_LoginControllerBase.doLogin', context: context);
 
   @override
-  Future<LoginResponseModel?> doLogin(String login, String password) {
-    return _$doLoginAsyncAction.run(() => super.doLogin(login, password));
+  Future<LoginResponseModel?> doLogin(
+      String login, String password, String tokenFirebase) {
+    return _$doLoginAsyncAction
+        .run(() => super.doLogin(login, password, tokenFirebase));
   }
 
   late final _$_LoginControllerBaseActionController =

@@ -24,7 +24,7 @@ class RoomRepository {
         ),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.data['data']);
       }
 
@@ -43,14 +43,14 @@ class RoomRepository {
     }
   }
 
-  Future<void> sendRoomSensorValue(String name, String email, bool alarmOn, bool notificationOn, bool sprinklersOn, int sensorValue) async {
+  Future<void> sendRoomSensorValue(String name, String email, bool alarmOn,
+      bool notificationOn, bool sprinklersOn, int sensorValue) async {
     final String url = '${baseUrl}rooms/sensor-measurement-details/$email';
     print(url);
 
-    final bodyJSON =
-    jsonEncode({
+    final bodyJSON = jsonEncode({
       "alarmOn": alarmOn,
-      "name" : name,
+      "name": name,
       "notificationOn": notificationOn,
       "sensorValue": sensorValue,
       "sprinklersOn": sprinklersOn
@@ -70,8 +70,9 @@ class RoomRepository {
         ),
       );
 
-      if(response.statusCode == 200){
+      if (response.statusCode == 200) {
         print(response.data);
+        print("HTTP " + response.statusCode.toString());
       }
       // var jsonDataRoom = json.decode(response.data);
       // print(jsonDataRoom);

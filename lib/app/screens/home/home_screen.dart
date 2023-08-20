@@ -19,15 +19,11 @@ import '../detail/details_screen.dart';
 class HomeScreen extends KFDrawerContent {
   final String? username;
   final String? email;
-  final MqttServerClient client;
-  final bool isConnected;
 
   HomeScreen({
     Key? key,
     this.username,
-    this.email,
-    required this.client,
-    required this.isConnected,
+    this.email
   });
 
   @override
@@ -139,7 +135,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return StreamBuilder(
       initialData: list,
-      stream: widget.client.updates,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final mqttReceivedMessages =
@@ -184,34 +179,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
+  // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
   Future<void> _generateNotification(int mqttReceivedValue) async {
-    String title = "";
-    String body = "";
-
-    if (mqttReceivedValue <= 0) {
-      title = "Apenas atualização de status...";
-      body = "Tudo em paz! Sem vazamento de gás no momento.";
-    } else if (mqttReceivedValue > 0 && mqttReceivedValue < 25) {
-      title =
-          "Atenção! Verifique as opções de monitoramento..."; // Colocar emoji de sirene
-      body = "Detectamos nível BAIXO de vazamento em seu local!";
-    } else if (mqttReceivedValue >= 25 && mqttReceivedValue < 51) {
-      title =
-          "🚨 Atenção! Verifique as opções de monitoramento "; // Colocar emoji de sirene
-      body = "Detectamos nível MÉDIO de vazamento em seu local!";
-    } else if (mqttReceivedValue >= 51) {
-      title = "Detectamos nível ALTO de vazamento em seu local!";
-      body =
-          "Entre agora em opções de monitoramento do seu cômodo para acionamento dos SPRINKLERS ou acione o SUPORTE TÉCNICO.";
-    }
-
-    await notificationRepository.createNotificationFirebase(
-        title, body, widget.email, token);
-
-    // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
     roomController.getUserRooms(widget.email!);
-
-    print(_roomController.roomList![0]);
   }
 
   Widget _title() {
