@@ -293,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               LoginResponseModel? response =
                                   await loginController.doLogin(
                                       emailLoginController.text,
-                                      passwordLoginController.text);
+                                      passwordLoginController.text, token);
 
                               print(response.toString());
 
@@ -315,9 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       builder: (context) => MainWidget(
                                             title: 'GasOut',
                                             username: response?.userName,
-                                            email: response?.login,
-                                        client: new MqttServerClient('aqltv1hod5z6j-ats.iot.us-east-1.amazonaws.com', ''),
-                                        isConnected: false
+                                            email: response?.login
                                           )),
                                 );
                               } else {

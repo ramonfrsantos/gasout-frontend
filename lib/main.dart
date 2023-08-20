@@ -8,7 +8,6 @@ import 'package:gas_out_app/app/screens/login/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kf_drawer/kf_drawer.dart';
 import 'package:gas_out_app/app/helpers/dependency_injection.dart' as di;
-import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -74,15 +73,11 @@ class MainWidget extends StatefulWidget {
       {Key? key,
       required this.title,
       this.username,
-      this.email,
-      required this.client,
-      required this.isConnected})
+      this.email})
       : super(key: key);
   final String title;
   final String? username;
   final String? email;
-  final MqttServerClient client;
-  late bool isConnected;
 
   @override
   _MainWidgetState createState() => _MainWidgetState();
@@ -100,13 +95,9 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     ClassBuilder.registerNotification(widget.email);
     ClassBuilder.registerStats();
     ClassBuilder.registerHome(
-        widget.username, widget.email, widget.client, widget.isConnected);
+        widget.username, widget.email);
     print(widget.username);
     print(widget.email);
-
-    if (widget.isConnected == false) {
-      _connect();
-    }
 
     _drawerController = KFDrawerController(
       initialPage: ClassBuilder.fromString('HomeScreen'),
@@ -117,9 +108,7 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
           icon: Icon(Icons.home, color: Colors.white),
           page: HomeScreen(
             username: widget.username,
-            email: widget.email,
-            client: widget.client,
-            isConnected: widget.isConnected,
+            email: widget.email
           ),
         ),
         KFDrawerItem.initWithPage(
@@ -215,75 +204,8 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
     );
   }
 
-  void _connect() async {
-    widget.isConnected = await mqttConnect();
-  }
-
-  // _disconnect() {
-  //   setState(() {
-  //     widget.isConnected = false;
-  //   });
-  //   widget.client.disconnect();
-  // }
-
-  Future<bool> mqttConnect() async {
-    setStatus("Conectando ao MQTT Broker...");
-    ByteData rootCA = await rootBundle.load('assets/certs/RootCA.pem');
-    ByteData deviceCert =
-        await rootBundle.load('assets/certs/DeviceCertificate.crt');
-    ByteData privateKey = await rootBundle.load('assets/certs/Private.key');
-
-    SecurityContext context = SecurityContext.defaultContext;
-    context.setClientAuthoritiesBytes(rootCA.buffer.asUint8List());
-    context.useCertificateChainBytes(deviceCert.buffer.asUint8List());
-    context.usePrivateKeyBytes(privateKey.buffer.asUint8List());
-
-    widget.client.securityContext = context;
-    widget.client.logging(on: true);
-    widget.client.keepAlivePeriod = 20;
-    widget.client.port = 8883;
-    widget.client.secure = true;
-    widget.client.onConnected = onConnected;
-    widget.client.onDisconnected = onDisconnected;
-    widget.client.pongCallback = pong;
-    widget.client.server = "a2adms8kafyh61-ats.iot.us-east-1.amazonaws.com";
-
-    print("-----------::: SERVER: " + widget.client.server);
-
-    final MqttConnectMessage connMess =
-        MqttConnectMessage().withClientIdentifier("sensor_gas_1");
-    widget.client.connectionMessage = connMess;
-
-    await widget.client.connect();
-
-    if (widget.client.connectionStatus!.state ==
-        MqttConnectionState.connected) {
-      print("Conectado ao AWS com sucesso.");
-    } else {
-      return false;
-    }
-
-    const topic = 'gas_out_topic';
-    widget.client.subscribe(topic, MqttQos.atLeastOnce);
-
-    return true;
-  }
-
   void setStatus(String content) {
       statusText = content;
-  }
-
-  void onConnected() {
-    setStatus("A conexão do cliente foi bem sucedida.");
-  }
-
-  void onDisconnected() {
-    setStatus("Cliente desconectado.");
-    widget.isConnected = false;
-  }
-
-  void pong() {
-    print('Ping response client callback invoked');
   }
 }
 

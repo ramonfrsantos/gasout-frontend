@@ -113,9 +113,6 @@ flutter:
     - assets/images/icon-lavanderia.png
     - assets/images/icon-sala.png
     - assets/images/otp.svg
-    - assets/certs/RootCA.pem
-    - assets/certs/DeviceCertificate.crt
-    - assets/certs/Private.key
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

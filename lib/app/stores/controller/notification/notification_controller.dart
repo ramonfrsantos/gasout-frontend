@@ -21,9 +21,4 @@ abstract class _NotificationControllerBase with Store {
   deleteNotification(String id) async {
     await _repository.deleteNotification(id);
   }
-
-  @action
-  createNotification(String title, String body, String? email, String token) async {
-    await _repository.createNotificationFirebase(title, body, email, token);
-  }
 }

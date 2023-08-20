@@ -45,17 +45,6 @@ mixin _$NotificationController on _NotificationControllerBase, Store {
         .run(() => super.deleteNotification(id));
   }
 
-  late final _$createNotificationAsyncAction = AsyncAction(
-      '_NotificationControllerBase.createNotification',
-      context: context);
-
-  @override
-  Future createNotification(
-      String title, String body, String? email, String token) {
-    return _$createNotificationAsyncAction
-        .run(() => super.createNotification(title, body, email, token));
-  }
-
   @override
   String toString() {
     return '''

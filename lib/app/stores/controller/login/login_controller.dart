@@ -90,8 +90,8 @@ abstract class _LoginControllerBase with Store {
   }
 
   @action
-  Future<LoginResponseModel?> doLogin(String login, String password) async {
-    return await _repository.doLogin(login, password);
+  Future<LoginResponseModel?> doLogin(String login, String password, String tokenFirebase) async {
+    return await _repository.doLogin(login, password, tokenFirebase);
   }
 
   bool validateStructure(String value) {
