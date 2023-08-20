@@ -27,7 +27,7 @@ String token = "";
 Future<void> main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
 
-  AppConfig.getInstance(config: Environment.dev);
+  AppConfig.getInstance(config: Environment.prod);
 
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   di.init();
