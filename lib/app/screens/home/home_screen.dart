@@ -20,11 +20,7 @@ class HomeScreen extends KFDrawerContent {
   final String? username;
   final String? email;
 
-  HomeScreen({
-    Key? key,
-    this.username,
-    this.email
-  });
+  HomeScreen({Key? key, this.username, this.email});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -107,14 +103,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     _shortDescription(),
                     SizedBox(height: 30),
                     _roomPicker(),
-                    SizedBox(height: 24),
-                    Padding(
-                      padding: EdgeInsets.only(top: 5, left: 20, right: 20),
-                      child: Divider(
-                        color: Colors.black54,
-                      ),
-                    ),
-                    _monitoring(),
                   ],
                 ),
                 Column(
@@ -153,10 +141,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           final roomName = json.decode(recMessString)['message']['roomName'];
           final userEmail = json.decode(recMessString)['message']['email'];
 
-          mqttSensorValue = (sensorValue/10.0).toInt();
+          mqttSensorValue = (sensorValue / 10.0).toInt();
           print(mqttSensorValue);
 
-          if (room.name.toLowerCase() == roomName.toString().toLowerCase() && room.userEmail.toLowerCase() == userEmail.toString().toLowerCase()) {
+          if (room.name.toLowerCase() == roomName.toString().toLowerCase() &&
+              room.userEmail.toLowerCase() ==
+                  userEmail.toString().toLowerCase()) {
             if (mqttSensorValue > 0 && mqttSensorValue < 52) {
               alarmOn = false;
               notificationOn = true;
@@ -184,11 +174,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     roomController.getUserRooms(widget.email!);
   }
 
+  String _capitalizeFirstLetter(String text) {
+    if (text.isEmpty) {
+      return text;
+    }
+
+    text = text.toLowerCase();
+    text = text[0].toUpperCase() + text.substring(1);
+
+    return text;
+  }
+
   Widget _title() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Text(
-        "Olá, ${(widget.username == null ? "" : widget.username)?.split(' ')[0]}!",
+        "Olá, ${(_capitalizeFirstLetter(widget.username!)).split(' ')[0]}!",
         textAlign: TextAlign.start,
         style: TextStyle(
           fontSize: 21,
@@ -256,45 +257,37 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           crossAxisCount: 2,
           children: _roomController.roomList!
               .map((room) => _listItem(
-                  'assets/images/${room.name.split(' ')[0].toLowerCase()}.jpg',
-                  room.name.split(' ')[0],
+                  _buildRoomImage(room.name),
+                  room.name,
                   room.sensorValue,
                   0,
-                  AssetImage(
-                      'assets/images/icon-${room.name.split(' ')[0].toLowerCase()}.png')))
+                  _buildRoomIcon(room.name)))
               .toList(),
         ),
       );
     }
   }
 
-  Widget _monitoring() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 24),
-      child: Column(
-        children: [
-          Row(
-            children: <Widget>[
-              Text(
-                "Horas de monitoramento",
-                style: new TextStyle(color: Colors.black87),
-              ),
-              Spacer(),
-              Switch(
-                value: monitoringController.activeMonitoring,
-                onChanged: monitoringController.setValue,
-                activeColor: ConstantColors.primaryColor,
-              ),
-            ],
-          ),
-          Text(
-            '* Reinicia a contagem de horas totais de monitoramento.',
-            style: TextStyle(fontSize: 12, color: Colors.black38),
-            textAlign: TextAlign.left,
-          ),
-        ],
-      ),
-    );
+  AssetImage _buildRoomIcon(String text) {
+    text = removeAccentsToUppercase(text);
+    return AssetImage('assets/images/icon-$text.png');
+  }
+
+  String _buildRoomImage(String text) {
+    text = removeAccentsToUppercase(text);
+    return 'assets/images/$text.jpg';
+  }
+
+  String removeAccentsToUppercase(String text) {
+    text = text.toLowerCase();
+    text = text.replaceAll(RegExp(r'[áàâã]', caseSensitive: false), r'a');
+    text = text.replaceAll(RegExp(r'[éèê]', caseSensitive: false), r'e');
+    text = text.replaceAll(RegExp(r'[íï]', caseSensitive: false), r'i');
+    text = text.replaceAll(RegExp(r'[óòôõ]', caseSensitive: false), r'o');
+    text = text.replaceAll(RegExp(r'[úùû]', caseSensitive: false), r'u');
+    text = text.replaceAll(RegExp(r'[ç]', caseSensitive: false), r'c');
+    text = text.replaceAll(RegExp(r'[ ]', caseSensitive: false), r'-');
+    return text;
   }
 
   _getUserRooms() async {
@@ -336,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _listItem(String imgpath, String stringPath, int averageValue,
       int maxValue, AssetImage icon) {
     return Padding(
-      padding: const EdgeInsets.all(18.0),
+      padding: const EdgeInsets.all(16.0),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
@@ -356,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           // color: ConstantColors.primaryColor.withOpacity(0.8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 16),
             child: Column(
               children: [
                 Container(
@@ -365,11 +358,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   decoration: BoxDecoration(
                       image: DecorationImage(image: icon, fit: BoxFit.cover)),
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 Text(
                   stringPath,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: 18,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

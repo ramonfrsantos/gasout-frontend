@@ -11,7 +11,7 @@ class DetailsScreen extends StatefulWidget {
   final imgPath;
   int averageValue;
   final int maxValue;
-  final int totalHours;
+  late int totalHours;
   final String? email;
   final String? roomName;
 
@@ -32,16 +32,16 @@ class DetailsScreen extends StatefulWidget {
 class _DetailsScreenState extends State<DetailsScreen> {
   bool alarmValue = false;
   bool notificationValue = false;
+  bool sprinklersValue = false;
 
   @override
   void initState() {
-
     // COLOCA O VALOR DO SENSOR QUE RETORNA DA API NA VARIÁVEL
-    if(roomController.roomList!.isNotEmpty){
+    if (roomController.roomList!.isNotEmpty) {
       widget.averageValue = roomController.roomList![0].sensorValue;
     }
 
-    print("Valor medio diario: " + widget.averageValue.toString());
+    print("Nível de vazamento diario: " + widget.averageValue.toString());
 
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
@@ -55,12 +55,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
           ? notificationValue = true
           : notificationValue = false;
 
-      widget.averageValue > 0
-          ? alarmValue = true
-          : alarmValue = false;
+      widget.averageValue > 25 ? alarmValue = true : alarmValue = false;
 
-      if(widget.averageValue <= 50){
+      if (widget.averageValue <= 50) {
         roomController.sprinklersValue = false;
+      } else {
+        roomController.sprinklersValue = true;
       }
     });
   }
@@ -101,7 +101,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
               alignment: Alignment.bottomCenter,
               child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 340,
+                  height: 380,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),
@@ -118,7 +118,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            listItemStats(
+                            _listItemStats(
                               imgpath: 'assets/images/notification.png',
                               name: "Notificações",
                               value: notificationValue,
@@ -126,22 +126,22 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                 notificationValue = value;
                               },
                             ),
-                            listItemStats(
-                              imgpath: 'assets/images/creative.png',
+                            _listItemStats(
+                              imgpath: 'assets/images/siren.png',
                               name: "Alarme",
                               value: alarmValue,
                               onChanged: (value) {
                                 alarmValue = value;
                               },
                             ),
-                            listItemStats(
+                            _listItemStats(
                               imgpath: 'assets/images/sprinkler.png',
                               name: "Sprinklers",
                               value: roomController.sprinklersValue,
                               onChanged: (value) {
                                 // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
                                 if (valorMedioDiarioPorCento >= 51) {
-                                  roomController.sprinklersValue == false
+                                  roomController.sprinklersValue == true
                                       ? _showAlertDialog(context)
                                       : setState(() {
                                           roomController.sprinklersValue =
@@ -161,29 +161,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                               color: Colors.black26,
                             )),
                         SizedBox(height: 5),
-                        // Padding(
-                        //   padding: const EdgeInsets.only(left: 20, right: 20),
-                        //   child: Row(
-                        //     children: <Widget>[
-                        //       Text(
-                        //         "Valor Máximo Atingido",
-                        //         style: new TextStyle(color: Colors.black87,fontSize: 18),
-                        //       ),
-                        //       Spacer(),
-                        //       Text(
-                        //         widget.maxValue.toString() + "%",
-                        //         style: new TextStyle(color: Colors.black87,fontSize: 18),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // SizedBox(height: 5),
                         Padding(
                           padding: const EdgeInsets.only(left: 20, right: 20),
                           child: Row(
                             children: <Widget>[
                               Text(
-                                "Total de Horas Monitoradas",
+                                "Total de horas monitoradas",
                                 style: new TextStyle(
                                     color: Colors.black87, fontSize: 18),
                               ),
@@ -202,7 +185,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                           child: Row(
                             children: <Widget>[
                               Text(
-                                "Valor Médio Diário",
+                                "Nível de vazamento diário",
                                 style: new TextStyle(
                                     color: Colors.black87, fontSize: 18),
                               ),
@@ -215,6 +198,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                             ],
                           ),
                         ),
+                        SizedBox(height: 24),
+                        Padding(
+                          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
+                          child: Divider(
+                            color: Colors.black26,
+                          ),
+                        ),
+                        _monitoring()
                       ],
                     ),
                   )),
@@ -225,7 +216,41 @@ class _DetailsScreenState extends State<DetailsScreen> {
     });
   }
 
-  Widget listItemStats({
+  Widget _monitoring() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 10, bottom: 24),
+      child: Column(
+        children: [
+          Row(
+            children: <Widget>[
+              Text(
+                "Horas de monitoramento",
+                style: new TextStyle(color: Colors.black87),
+              ),
+              Spacer(),
+              Switch(
+                value: monitoringController.activeMonitoring,
+                onChanged: (value){
+                  setState(() {
+                    monitoringController.setValue(value);
+                    widget.totalHours = monitoringController.monitoringTotalHours;
+                  });
+                },
+                activeColor: ConstantColors.primaryColor,
+              ),
+            ],
+          ),
+          Text(
+            '* Reinicia a contagem de horas totais de monitoramento.',
+            style: TextStyle(fontSize: 12, color: Colors.black38),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _listItemStats({
     required String imgpath,
     required String name,
     required bool value,
@@ -268,7 +293,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       onPressed: () {
         // SE NÃO CONFIRMA, SPRINKLERS DESLIGADOS
         setState(() {
-          roomController.sprinklersValue = false;
+          roomController.sprinklersValue = true;
         });
         Navigator.of(context).pop();
       },
@@ -278,7 +303,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       onPressed: () {
         // SE CONFIRMA, SPRINKLERS LIGADOS
         setState(() {
-          roomController.sprinklersValue = true;
+          roomController.sprinklersValue = false;
         });
         Navigator.of(context).pop();
       },
@@ -287,8 +312,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
     AlertDialog alert = AlertDialog(
       title: Text("Atenção!", style: GoogleFonts.muli(fontSize: 24)),
       content: Text(
-          "Deseja realmente acionar os sprinklers? Isso possivelmente causará alagamento do local.",
-          style: GoogleFonts.muli(fontSize: 20)),
+        "Desativar os sprinklers pode ser prejudicial à sua saúde e segurança. \n\nOs sprinklers são projetados para proteger você e sua propriedade de incêndios. Ao desativá-los, você está aumentando o risco de incêndio.\n\nSe você precisar desativar os sprinklers, faça isso manualmente e apenas se estiver seguro.",
+        style: GoogleFonts.muli(fontSize: 20),
+      ),
       actions: [
         cancelaButton,
         continuaButton,
