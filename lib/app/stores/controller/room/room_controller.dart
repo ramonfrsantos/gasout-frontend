@@ -12,17 +12,36 @@ abstract class _RoomControllerBase with Store {
   @observable
   bool sprinklersValue = false;
 
+  @observable
+  bool alarmValue = false;
+
+  @observable
+  bool notificationValue = false;
+
   @action
   setSprinklersValue(bool value) {
     sprinklersValue = value;
   }
 
+  @action
+  setAlarmValue(bool value) {
+    alarmValue = value;
+  }
+
+  @action
+  setNotificationValue(bool value) {
+    notificationValue = value;
+  }
+
   @observable
   List<DataRoom>? roomList = [];
 
+  @observable
+  DataRoom? userRoom;
+
   @action
-  getUserRooms(String? login) async {
-    roomList = await _repository.getUserRooms(login!);
+  getUserRooms(String? login, String roomName) async {
+    roomList = await _repository.getUserRooms(login!, roomName);
     print(roomList);
   }
 

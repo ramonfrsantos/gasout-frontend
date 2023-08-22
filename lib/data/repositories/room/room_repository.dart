@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import '../../../app/config/app_config.dart';
 import '../../../app/constants/gasout_constants.dart';
@@ -10,9 +11,18 @@ class RoomRepository {
 
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<List<DataRoom>> getUserRooms(String email) async {
-    final String url = '${baseUrl}rooms/find-all/$email';
+  Future<List<DataRoom>> getUserRooms(String email, String roomName) async {
+
+    String url = '';
+
+    if(roomName.isNotEmpty){
+      url = '${baseUrl}rooms/$email?roomName=$roomName';
+    } else {
+      url = '${baseUrl}rooms/$email';
+    }
+
     print(url);
+
     try {
       var response = await client.get(
         url,

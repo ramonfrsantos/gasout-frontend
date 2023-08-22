@@ -144,7 +144,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           mqttSensorValue = (sensorValue / 10.0).toInt();
           print(mqttSensorValue);
 
-          if (room.name.toLowerCase() == roomName.toString().toLowerCase() &&
+          if (room.name.toString().toLowerCase() ==
+                  roomName.toString().toLowerCase() &&
               room.userEmail.toLowerCase() ==
                   userEmail.toString().toLowerCase()) {
             if (mqttSensorValue > 0 && mqttSensorValue < 52) {
@@ -171,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
   Future<void> _generateNotification(int mqttReceivedValue) async {
-    roomController.getUserRooms(widget.email!);
+    roomController.getUserRooms(widget.email!, "");
   }
 
   String _capitalizeFirstLetter(String text) {
@@ -257,28 +258,35 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           crossAxisCount: 2,
           children: _roomController.roomList!
               .map((room) => _listItem(
-                  _buildRoomImage(room.name),
+                  _buildRoomImage(room.name.toString()),
                   room.name,
                   room.sensorValue,
                   0,
-                  _buildRoomIcon(room.name)))
+                  _buildRoomIcon(room.name.toString())))
               .toList(),
         ),
       );
     }
   }
 
+  String _buildRoomNameShown(String text) {
+    text = text.toLowerCase();
+    text = _capitalizeFirstLetter(text);
+    text = text.replaceAll(RegExp(r'[_]', caseSensitive: false), r' ');
+    return text;
+  }
+
   AssetImage _buildRoomIcon(String text) {
-    text = removeAccentsToUppercase(text);
+    text = roomNameEnumToPath(text);
     return AssetImage('assets/images/icon-$text.png');
   }
 
   String _buildRoomImage(String text) {
-    text = removeAccentsToUppercase(text);
+    text = roomNameEnumToPath(text);
     return 'assets/images/$text.jpg';
   }
 
-  String removeAccentsToUppercase(String text) {
+  String roomNameEnumToPath(String text) {
     text = text.toLowerCase();
     text = text.replaceAll(RegExp(r'[áàâã]', caseSensitive: false), r'a');
     text = text.replaceAll(RegExp(r'[éèê]', caseSensitive: false), r'e');
@@ -286,12 +294,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     text = text.replaceAll(RegExp(r'[óòôõ]', caseSensitive: false), r'o');
     text = text.replaceAll(RegExp(r'[úùû]', caseSensitive: false), r'u');
     text = text.replaceAll(RegExp(r'[ç]', caseSensitive: false), r'c');
-    text = text.replaceAll(RegExp(r'[ ]', caseSensitive: false), r'-');
+    text = text.replaceAll(RegExp(r'[_]', caseSensitive: false), r'-');
     return text;
   }
 
   _getUserRooms() async {
-    await _roomController.getUserRooms(widget.email);
+    await _roomController.getUserRooms(widget.email, "");
   }
 
   _showLogOutAlertDialog(BuildContext context) {
@@ -326,7 +334,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _listItem(String imgpath, String stringPath, int averageValue,
+  Widget _listItem(String imgpath, String roomName, int averageValue,
       int maxValue, AssetImage icon) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -339,7 +347,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     maxValue: maxValue,
                     totalHours: monitoringController.monitoringTotalHours,
                     email: widget.email,
-                    roomName: stringPath,
+                    roomName: roomName,
                   )));
         },
         child: Container(
@@ -349,18 +357,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           // color: ConstantColors.primaryColor.withOpacity(0.8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 18),
             child: Column(
               children: [
                 Container(
-                  height: 60.0,
-                  width: 60.0,
+                  height: 55.0,
+                  width: 55.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(image: icon, fit: BoxFit.cover)),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  stringPath,
+                  _buildRoomNameShown(roomName.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,

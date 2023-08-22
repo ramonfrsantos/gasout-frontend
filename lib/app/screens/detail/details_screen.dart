@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:gas_out_app/data/model/room/room_response_model.dart';
-import 'package:gas_out_app/data/repositories/notification/notification_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/gasout_constants.dart';
 import '../../helpers/global.dart';
-import '../../stores/controller/notification/notification_controller.dart';
 
 class DetailsScreen extends StatefulWidget {
   final imgPath;
-  int averageValue;
+  late int averageValue;
   final int maxValue;
   late int totalHours;
   final String? email;
@@ -30,36 +27,37 @@ class DetailsScreen extends StatefulWidget {
 }
 
 class _DetailsScreenState extends State<DetailsScreen> {
-  bool alarmValue = false;
-  bool notificationValue = false;
-  bool sprinklersValue = false;
-
   @override
   void initState() {
-    // COLOCA O VALOR DO SENSOR QUE RETORNA DA API NA VARIÁVEL
-    if (roomController.roomList!.isNotEmpty) {
-      widget.averageValue = roomController.roomList![0].sensorValue;
-    }
-
-    print("Nível de vazamento diario: " + widget.averageValue.toString());
-
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
+
+    print("Nível de vazamento diario: " + widget.averageValue.toString());
 
     super.initState();
   }
 
-  setValues() {
+  setValues() async {
+    await roomController.getUserRooms(widget.email, widget.roomName!);
+
     setState(() {
-      widget.averageValue > 0
-          ? notificationValue = true
-          : notificationValue = false;
+      widget.averageValue = roomController.roomList![0].sensorValue;
 
-      widget.averageValue > 25 ? alarmValue = true : alarmValue = false;
-
-      if (widget.averageValue <= 50) {
+      if (widget.averageValue <= 0) {
+        roomController.notificationValue = false;
+        roomController.alarmValue = false;
+        roomController.sprinklersValue = false;
+      } else if (widget.averageValue <= 25) {
+        roomController.notificationValue = true;
+        roomController.alarmValue = false;
+        roomController.sprinklersValue = false;
+      } else if (widget.averageValue <= 51) {
+        roomController.notificationValue = true;
+        roomController.alarmValue = true;
         roomController.sprinklersValue = false;
       } else {
+        roomController.notificationValue = true;
+        roomController.alarmValue = true;
         roomController.sprinklersValue = true;
       }
     });
@@ -70,149 +68,168 @@ class _DetailsScreenState extends State<DetailsScreen> {
     var valorMedioDiarioPorCento = ((100 * widget.averageValue) / 100);
     return Observer(builder: (context) {
       return Scaffold(
-        body: Stack(
-          children: <Widget>[
-            new Container(
-              height: MediaQuery.of(context).size.height - 300,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage(widget.imgPath), fit: BoxFit.cover)),
-            ),
-            new Padding(
-              padding: EdgeInsets.only(top: 40),
-              child: new Row(
-                children: <Widget>[
-                  new IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                      color: Colors.white,
+          body: roomController.roomList!.length > 0
+              ? Stack(
+                  children: <Widget>[
+                    new Container(
+                      height: MediaQuery.of(context).size.height - 300,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(widget.imgPath),
+                              fit: BoxFit.cover)),
                     ),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                  ),
-                  SizedBox(width: 15)
-                ],
-              ),
-            ),
-            new Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 380,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
+                    new Padding(
+                      padding: EdgeInsets.only(top: 40),
+                      child: new Row(
+                        children: <Widget>[
+                          new IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
+                              size: 30,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context, false);
+                            },
+                          ),
+                          SizedBox(width: 15)
+                        ],
+                      ),
                     ),
-                    color: Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    child: new Column(
-                      children: <Widget>[
-                        SizedBox(height: 28),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            _listItemStats(
-                              imgpath: 'assets/images/notification.png',
-                              name: "Notificações",
-                              value: notificationValue,
-                              onChanged: (value) {
-                                notificationValue = value;
-                              },
+                    new Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 380,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(40),
+                              topRight: Radius.circular(40),
                             ),
-                            _listItemStats(
-                              imgpath: 'assets/images/siren.png',
-                              name: "Alarme",
-                              value: alarmValue,
-                              onChanged: (value) {
-                                alarmValue = value;
-                              },
-                            ),
-                            _listItemStats(
-                              imgpath: 'assets/images/sprinkler.png',
-                              name: "Sprinklers",
-                              value: roomController.sprinklersValue,
-                              onChanged: (value) {
-                                // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
-                                if (valorMedioDiarioPorCento >= 51) {
-                                  roomController.sprinklersValue == true
-                                      ? _showAlertDialog(context)
-                                      : setState(() {
-                                          roomController.sprinklersValue =
+                            color: Colors.white,
+                          ),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 18.0),
+                            child: new Column(
+                              children: <Widget>[
+                                SizedBox(height: 28),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    _listItemStats(
+                                      imgpath: 'assets/images/notification.png',
+                                      name: "Notificações",
+                                      value: roomController.notificationValue,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          roomController.notificationValue =
                                               value;
                                         });
-                                } else {
-                                  roomController.sprinklersValue = false;
-                                }
-                              },
+                                      },
+                                    ),
+                                    _listItemStats(
+                                      imgpath: 'assets/images/siren.png',
+                                      name: "Alarme",
+                                      value: roomController.alarmValue,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          roomController.alarmValue = value;
+                                        });
+                                      },
+                                    ),
+                                    _listItemStats(
+                                      imgpath: 'assets/images/sprinkler.png',
+                                      name: "Sprinklers",
+                                      value: roomController.sprinklersValue,
+                                      onChanged: (value) {
+                                        // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
+                                        if (valorMedioDiarioPorCento > 50) {
+                                          roomController.sprinklersValue == true
+                                              ? _showAlertDialog(context)
+                                              : setState(() {
+                                              roomController.sprinklersValue =
+                                                  value;
+                                          });
+                                        } else {
+                                          roomController.sprinklersValue =
+                                              false;
+                                        }
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 10, left: 20, right: 20),
+                                    child: Divider(
+                                      color: Colors.black26,
+                                    )),
+                                SizedBox(height: 5),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        "Total de horas monitoradas",
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        widget.totalHours.toString(),
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        "Nível de vazamento diário",
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        valorMedioDiarioPorCento.toString() +
+                                            "%",
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(height: 24),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: 5, left: 20, right: 20),
+                                  child: Divider(
+                                    color: Colors.black26,
+                                  ),
+                                ),
+                                _monitoring()
+                              ],
                             ),
-                          ],
-                        ),
-                        Padding(
-                            padding:
-                                EdgeInsets.only(top: 10, left: 20, right: 20),
-                            child: Divider(
-                              color: Colors.black26,
-                            )),
-                        SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "Total de horas monitoradas",
-                                style: new TextStyle(
-                                    color: Colors.black87, fontSize: 18),
-                              ),
-                              Spacer(),
-                              Text(
-                                widget.totalHours.toString(),
-                                style: new TextStyle(
-                                    color: Colors.black87, fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 5),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                "Nível de vazamento diário",
-                                style: new TextStyle(
-                                    color: Colors.black87, fontSize: 18),
-                              ),
-                              Spacer(),
-                              Text(
-                                valorMedioDiarioPorCento.toString() + "%",
-                                style: new TextStyle(
-                                    color: Colors.black87, fontSize: 18),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 24),
-                        Padding(
-                          padding: EdgeInsets.only(top: 5, left: 20, right: 20),
-                          child: Divider(
-                            color: Colors.black26,
-                          ),
-                        ),
-                        _monitoring()
-                      ],
-                    ),
-                  )),
-            )
-          ],
-        ),
-      );
+                          )),
+                    )
+                  ],
+                )
+              : CircularProgressIndicator(
+                  color: ConstantColors.primaryColor.withOpacity(0.8)));
     });
   }
 
@@ -230,10 +247,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
               Spacer(),
               Switch(
                 value: monitoringController.activeMonitoring,
-                onChanged: (value){
+                onChanged: (value) {
                   setState(() {
                     monitoringController.setValue(value);
-                    widget.totalHours = monitoringController.monitoringTotalHours;
+                    widget.totalHours =
+                        monitoringController.monitoringTotalHours;
                   });
                 },
                 activeColor: ConstantColors.primaryColor,
@@ -291,7 +309,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     Widget cancelaButton = TextButton(
       child: Text("Cancelar", style: GoogleFonts.muli(fontSize: 16)),
       onPressed: () {
-        // SE NÃO CONFIRMA, SPRINKLERS DESLIGADOS
+        // SE NÃO CONFIRMA, SPRINKLERS MANTÉM LIGADOS
         setState(() {
           roomController.sprinklersValue = true;
         });
@@ -301,7 +319,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     Widget continuaButton = TextButton(
       child: Text("Continuar", style: GoogleFonts.muli(fontSize: 16)),
       onPressed: () {
-        // SE CONFIRMA, SPRINKLERS LIGADOS
+        // SE CONFIRMA, SPRINKLERS DESLIGADOS
         setState(() {
           roomController.sprinklersValue = false;
         });

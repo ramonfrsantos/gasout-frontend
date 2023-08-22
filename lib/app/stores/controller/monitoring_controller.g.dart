@@ -42,6 +42,38 @@ mixin _$MonitoringController on _MonitoringControllerBase, Store {
     });
   }
 
+  late final _$_startAtom =
+      Atom(name: '_MonitoringControllerBase._start', context: context);
+
+  @override
+  int get _start {
+    _$_startAtom.reportRead();
+    return super._start;
+  }
+
+  @override
+  set _start(int value) {
+    _$_startAtom.reportWrite(value, super._start, () {
+      super._start = value;
+    });
+  }
+
+  late final _$_totalHoursAtom =
+      Atom(name: '_MonitoringControllerBase._totalHours', context: context);
+
+  @override
+  int get _totalHours {
+    _$_totalHoursAtom.reportRead();
+    return super._totalHours;
+  }
+
+  @override
+  set _totalHours(int value) {
+    _$_totalHoursAtom.reportWrite(value, super._totalHours, () {
+      super._totalHours = value;
+    });
+  }
+
   late final _$_MonitoringControllerBaseActionController =
       ActionController(name: '_MonitoringControllerBase', context: context);
 

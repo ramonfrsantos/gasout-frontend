@@ -8,7 +8,7 @@ class MonitoringController = _MonitoringControllerBase
 
 abstract class _MonitoringControllerBase with Store {
   @observable
-  bool activeMonitoring = true;
+  bool activeMonitoring = false;
 
 //TODO: setar o valor desejado
   @observable
@@ -18,28 +18,30 @@ abstract class _MonitoringControllerBase with Store {
   setValue(bool value) {
     monitoringTotalHours = 0;
     activeMonitoring = value;
-    if (value) {
-      setTimer(activeMonitoring);
-    }
+    setTimer(activeMonitoring);
   }
 
+  @observable
   int _start = 0;
+
+  @observable
   int _totalHours = 0;
+
   @action
   setTimer(bool isActive) {
-    //TODO: setar o tempo desejado
-    const oneHour = const Duration(seconds: 3600);
+    //TODO: setar o tempo desejadoG
+    const oneHour = const Duration(seconds: 3);
     Timer.periodic(
       oneHour,
       (Timer timer) {
-        if (!isActive) {
-          // _timer = null;
-        } else {
+        if (isActive) {
           _start++;
-          _totalHours = _start;
-          monitoringTotalHours = _totalHours;
-          // print(_totalHours);
+        } else {
+          _start = 0;
         }
+
+        _totalHours = _start;
+        monitoringTotalHours = _totalHours;
       },
     );
   }

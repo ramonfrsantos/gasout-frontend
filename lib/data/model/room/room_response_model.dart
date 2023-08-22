@@ -1,4 +1,3 @@
-
 class RoomResponseModel {
   late DataRoom data;
 

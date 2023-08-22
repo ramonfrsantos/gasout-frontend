@@ -41,12 +41,29 @@ mixin _$RoomController on _RoomControllerBase, Store {
     });
   }
 
+  late final _$userRoomAtom =
+      Atom(name: '_RoomControllerBase.userRoom', context: context);
+
+  @override
+  DataRoom? get userRoom {
+    _$userRoomAtom.reportRead();
+    return super.userRoom;
+  }
+
+  @override
+  set userRoom(DataRoom? value) {
+    _$userRoomAtom.reportWrite(value, super.userRoom, () {
+      super.userRoom = value;
+    });
+  }
+
   late final _$getUserRoomsAsyncAction =
       AsyncAction('_RoomControllerBase.getUserRooms', context: context);
 
   @override
-  Future getUserRooms(String? login) {
-    return _$getUserRoomsAsyncAction.run(() => super.getUserRooms(login));
+  Future getUserRooms(String? login, String roomName) {
+    return _$getUserRoomsAsyncAction
+        .run(() => super.getUserRooms(login, roomName));
   }
 
   late final _$sendRoomSensorValueAsyncAction =
@@ -77,7 +94,8 @@ mixin _$RoomController on _RoomControllerBase, Store {
   String toString() {
     return '''
 sprinklersValue: ${sprinklersValue},
-roomList: ${roomList}
+roomList: ${roomList},
+userRoom: ${userRoom}
     ''';
   }
 }
