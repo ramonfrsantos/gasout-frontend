@@ -13,14 +13,31 @@ abstract class _RoomControllerBase with Store {
   bool sprinklersValue = false;
 
   @observable
+  bool sprinklersSwitchHandle = false;
+
+  @observable
   bool alarmValue = false;
+
+  @observable
+  bool alarmSwitchHandle = false;
 
   @observable
   bool notificationValue = false;
 
+  @observable
+  bool notificationSwitchHandle = false;
+
+  @observable
+  String roomNameObservable = "";
+
   @action
   setSprinklersValue(bool value) {
     sprinklersValue = value;
+  }
+
+  @action
+  setSprinklersSwitchHandle(bool value) {
+    sprinklersSwitchHandle = value;
   }
 
   @action
@@ -29,8 +46,23 @@ abstract class _RoomControllerBase with Store {
   }
 
   @action
+  setAlarmSwitchHandle(bool value) {
+    alarmSwitchHandle = value;
+  }
+
+  @action
   setNotificationValue(bool value) {
     notificationValue = value;
+  }
+
+  @action
+  setNotificationSwitchHandle(bool value) {
+    notificationSwitchHandle = value;
+  }
+
+  @action
+  setRoomNameObservable(String value) {
+    roomNameObservable = value;
   }
 
   @observable

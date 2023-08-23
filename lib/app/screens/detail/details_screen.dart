@@ -42,23 +42,51 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     setState(() {
       widget.averageValue = roomController.roomList![0].sensorValue;
+      String roomName = roomController.roomList![0].name;
+
+      print(roomName);
+      print(roomController.roomNameObservable);
 
       if (widget.averageValue <= 0) {
-        roomController.notificationValue = false;
-        roomController.alarmValue = false;
-        roomController.sprinklersValue = false;
+        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.notificationValue = false;
+        }
+        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.alarmValue = false;
+        }
+        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.sprinklersValue = false;
+        }
       } else if (widget.averageValue <= 25) {
-        roomController.notificationValue = true;
-        roomController.alarmValue = false;
-        roomController.sprinklersValue = false;
+        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.notificationValue = true;
+        }
+        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.alarmValue = false;
+        }
+        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.sprinklersValue = false;
+        }
       } else if (widget.averageValue <= 51) {
-        roomController.notificationValue = true;
-        roomController.alarmValue = true;
-        roomController.sprinklersValue = false;
+        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.notificationValue = true;
+        }
+        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.alarmValue = true;
+        }
+        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.sprinklersValue = false;
+        }
       } else {
-        roomController.notificationValue = true;
-        roomController.alarmValue = true;
-        roomController.sprinklersValue = true;
+        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.notificationValue = true;
+        }
+        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.alarmValue = true;
+        }
+        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
+          roomController.sprinklersValue = true;
+        }
       }
     });
   }
@@ -125,6 +153,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       name: "Notificações",
                                       value: roomController.notificationValue,
                                       onChanged: (value) {
+                                        roomController
+                                            .notificationSwitchHandle = true;
+
+                                        roomController.roomNameObservable = widget.roomName!;
+
                                         setState(() {
                                           roomController.notificationValue =
                                               value;
@@ -136,6 +169,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       name: "Alarme",
                                       value: roomController.alarmValue,
                                       onChanged: (value) {
+                                        roomController.alarmSwitchHandle =
+                                        true;
+
+                                        roomController.roomNameObservable = widget.roomName!;
+
                                         setState(() {
                                           roomController.alarmValue = value;
                                         });
@@ -146,18 +184,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       name: "Sprinklers",
                                       value: roomController.sprinklersValue,
                                       onChanged: (value) {
+                                        roomController
+                                            .sprinklersSwitchHandle =
+                                        true;
+
+                                        roomController.roomNameObservable = widget.roomName!;
+
                                         // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
-                                        if (valorMedioDiarioPorCento > 50) {
-                                          roomController.sprinklersValue == true
-                                              ? _showAlertDialog(context)
-                                              : setState(() {
-                                              roomController.sprinklersValue =
-                                                  value;
-                                          });
-                                        } else {
-                                          roomController.sprinklersValue =
-                                              false;
-                                        }
+                                        // if (valorMedioDiarioPorCento > 50) {}
+                                        roomController.sprinklersValue == true
+                                            ? _showAlertDialog(context)
+                                            : setState(() {
+                                                roomController.sprinklersValue =
+                                                    value;
+                                              });
                                       },
                                     ),
                                   ],
@@ -238,30 +278,35 @@ class _DetailsScreenState extends State<DetailsScreen> {
       padding: const EdgeInsets.only(left: 20, right: 10, bottom: 24),
       child: Column(
         children: [
-          Row(
-            children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: <Widget>[
+                  Text(
+                    "Horas de monitoramento",
+                    style: new TextStyle(color: Colors.black87),
+                  ),
+                  Spacer(),
+                  Switch(
+                    value: monitoringController.activeMonitoring,
+                    onChanged: (value) {
+                      setState(() {
+                        monitoringController.setValue(value);
+                        widget.totalHours =
+                            monitoringController.monitoringTotalHours;
+                      });
+                    },
+                    activeColor: ConstantColors.primaryColor,
+                  ),
+                ],
+              ),
               Text(
-                "Horas de monitoramento",
-                style: new TextStyle(color: Colors.black87),
-              ),
-              Spacer(),
-              Switch(
-                value: monitoringController.activeMonitoring,
-                onChanged: (value) {
-                  setState(() {
-                    monitoringController.setValue(value);
-                    widget.totalHours =
-                        monitoringController.monitoringTotalHours;
-                  });
-                },
-                activeColor: ConstantColors.primaryColor,
-              ),
+                'Reinicia a contagem de horas totais de monitoramento.',
+                style: TextStyle(fontSize: 12.5, color: Colors.black38),
+                textAlign: TextAlign.left,
+              )
             ],
-          ),
-          Text(
-            '* Reinicia a contagem de horas totais de monitoramento.',
-            style: TextStyle(fontSize: 12, color: Colors.black38),
-            textAlign: TextAlign.left,
           ),
         ],
       ),

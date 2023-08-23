@@ -272,8 +272,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String _buildRoomNameShown(String text) {
     text = text.toLowerCase();
     text = _capitalizeFirstLetter(text);
-    text = text.replaceAll(RegExp(r'[_]', caseSensitive: false), r' ');
-    return text;
+    return _capitalizeFirstLetter(text.split('_').last);
   }
 
   AssetImage _buildRoomIcon(String text) {
@@ -357,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           // color: ConstantColors.primaryColor.withOpacity(0.8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 18),
+            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 30),
             child: Column(
               children: [
                 Container(

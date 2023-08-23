@@ -45,7 +45,7 @@ class UserRepository {
   }
 
   Future<String?> sendVerificationCode(String? email) async {
-    final String url = '${baseUrl}users/send-verification-mail/$email';
+    final String url = '${baseUrl}users/send-verification-email/$email';
     print(url);
 
     try {
@@ -62,7 +62,7 @@ class UserRepository {
       print(response.data);
       print("HTTP " + response.statusCode.toString());
 
-      return response.data.toString();
+      return response.data['data'].toString();
     } catch (e) {
       print(e.toString());
     }
@@ -87,7 +87,7 @@ class UserRepository {
       print(response.data);
       print("HTTP " + response.statusCode.toString());
 
-      return response.data;
+      return response.data['data'];
     } catch (e) {
       print(e.toString());
     }
