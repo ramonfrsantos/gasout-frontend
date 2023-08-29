@@ -73,11 +73,11 @@ class MainWidget extends StatefulWidget {
       {Key? key,
       required this.title,
       this.username,
-      this.email})
+      required this.email})
       : super(key: key);
   final String title;
   final String? username;
-  final String? email;
+  final String email;
 
   @override
   _MainWidgetState createState() => _MainWidgetState();

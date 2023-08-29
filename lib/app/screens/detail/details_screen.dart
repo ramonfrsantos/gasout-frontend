@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/gasout_constants.dart';
 import '../../helpers/global.dart';
 
 class DetailsScreen extends StatefulWidget {
   final imgPath;
-  late int averageValue;
-  final int maxValue;
-  late int totalHours;
-  final String? email;
-  final String? roomName;
+  final int nameId;
+  final String nameDescription;
+
+  late int averageValue = 0;
+  late int totalHours = 0;
+  late String email = "";
+
+  late bool notificationOn = false;
+  late bool alarmOn = false;
+  late bool sprinklersOn = false;
 
   DetailsScreen(
       {Key? key,
-      this.imgPath,
+      this.imgPath, required this.nameId,
       required this.averageValue,
-      required this.maxValue,
       required this.totalHours,
       required this.email,
-      required this.roomName})
+      required this.nameDescription})
       : super(key: key);
 
   @override
@@ -38,64 +41,27 @@ class _DetailsScreenState extends State<DetailsScreen> {
   }
 
   setValues() async {
-    await roomController.getUserRooms(widget.email, widget.roomName!);
+    await roomController.getUserRooms(widget.email, widget.nameId);
 
     setState(() {
       widget.averageValue = roomController.roomList![0].sensorValue;
-      String roomName = roomController.roomList![0].name;
 
-      print(roomName);
-      print(roomController.roomNameObservable);
+      widget.notificationOn = roomController.roomList![0].notificationOn;
+      widget.alarmOn = roomController.roomList![0].alarmOn;
+      widget.sprinklersOn = roomController.roomList![0].sprinklersOn;
 
-      if (widget.averageValue <= 0) {
-        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.notificationValue = false;
-        }
-        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.alarmValue = false;
-        }
-        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.sprinklersValue = false;
-        }
-      } else if (widget.averageValue <= 25) {
-        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.notificationValue = true;
-        }
-        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.alarmValue = false;
-        }
-        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.sprinklersValue = false;
-        }
-      } else if (widget.averageValue <= 51) {
-        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.notificationValue = true;
-        }
-        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.alarmValue = true;
-        }
-        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.sprinklersValue = false;
-        }
-      } else {
-        if (roomController.notificationSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.notificationValue = true;
-        }
-        if (roomController.alarmSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.alarmValue = true;
-        }
-        if (roomController.sprinklersSwitchHandle == false || roomName != roomController.roomNameObservable) {
-          roomController.sprinklersValue = true;
-        }
-      }
+      widget.email = roomController.roomList![0].user!.email!;
+
+      print("NOTIFICATION: " + widget.notificationOn.toString());
+      print("ALARM: " + widget.alarmOn.toString());
+      print("SPRINKLERS: " + widget.sprinklersOn.toString());
     });
   }
 
   @override
   Widget build(BuildContext context) {
     var valorMedioDiarioPorCento = ((100 * widget.averageValue) / 100);
-    return Observer(builder: (context) {
-      return Scaffold(
+    return Scaffold(
           body: roomController.roomList!.length > 0
               ? Stack(
                   children: <Widget>[
@@ -151,53 +117,42 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     _listItemStats(
                                       imgpath: 'assets/images/notification.png',
                                       name: "Notificações",
-                                      value: roomController.notificationValue,
+                                      value: widget.notificationOn,
                                       onChanged: (value) {
-                                        roomController
-                                            .notificationSwitchHandle = true;
-
-                                        roomController.roomNameObservable = widget.roomName!;
-
                                         setState(() {
-                                          roomController.notificationValue =
-                                              value;
+                                          widget.notificationOn = value;
+                                          // salvar switch
+                                          roomController.updateSwitches(widget.email, widget.nameId, value, widget.alarmOn, widget.sprinklersOn);
                                         });
                                       },
                                     ),
                                     _listItemStats(
                                       imgpath: 'assets/images/siren.png',
                                       name: "Alarme",
-                                      value: roomController.alarmValue,
+                                      value: widget.alarmOn,
                                       onChanged: (value) {
-                                        roomController.alarmSwitchHandle =
-                                        true;
-
-                                        roomController.roomNameObservable = widget.roomName!;
-
                                         setState(() {
-                                          roomController.alarmValue = value;
+                                          widget.alarmOn = value;
+                                          // salvar switch
+                                          roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, value, widget.sprinklersOn);
+
                                         });
                                       },
                                     ),
                                     _listItemStats(
                                       imgpath: 'assets/images/sprinkler.png',
                                       name: "Sprinklers",
-                                      value: roomController.sprinklersValue,
+                                      value: widget.sprinklersOn,
                                       onChanged: (value) {
-                                        roomController
-                                            .sprinklersSwitchHandle =
-                                        true;
-
-                                        roomController.roomNameObservable = widget.roomName!;
-
                                         // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
                                         // if (valorMedioDiarioPorCento > 50) {}
-                                        roomController.sprinklersValue == true
+                                        widget.sprinklersOn == true
                                             ? _showAlertDialog(context)
                                             : setState(() {
-                                                roomController.sprinklersValue =
-                                                    value;
-                                              });
+                                                widget.sprinklersOn = value;
+                                                // salvar switch
+                                                roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, widget.alarmOn, value);
+                                        });
                                       },
                                     ),
                                   ],
@@ -270,7 +225,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 )
               : CircularProgressIndicator(
                   color: ConstantColors.primaryColor.withOpacity(0.8)));
-    });
   }
 
   Widget _monitoring() {
@@ -356,7 +310,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
       onPressed: () {
         // SE NÃO CONFIRMA, SPRINKLERS MANTÉM LIGADOS
         setState(() {
-          roomController.sprinklersValue = true;
+          widget.sprinklersOn = true;
         });
         Navigator.of(context).pop();
       },
@@ -366,7 +320,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
       onPressed: () {
         // SE CONFIRMA, SPRINKLERS DESLIGADOS
         setState(() {
-          roomController.sprinklersValue = false;
+          widget.sprinklersOn = false;
+          // salvar switch
+          roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, widget.alarmOn, widget.sprinklersOn);
         });
         Navigator.of(context).pop();
       },

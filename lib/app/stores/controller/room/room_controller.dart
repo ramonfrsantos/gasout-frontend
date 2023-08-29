@@ -10,77 +10,19 @@ abstract class _RoomControllerBase with Store {
   RoomRepository _repository = RoomRepository();
 
   @observable
-  bool sprinklersValue = false;
-
-  @observable
-  bool sprinklersSwitchHandle = false;
-
-  @observable
-  bool alarmValue = false;
-
-  @observable
-  bool alarmSwitchHandle = false;
-
-  @observable
-  bool notificationValue = false;
-
-  @observable
-  bool notificationSwitchHandle = false;
-
-  @observable
-  String roomNameObservable = "";
-
-  @action
-  setSprinklersValue(bool value) {
-    sprinklersValue = value;
-  }
-
-  @action
-  setSprinklersSwitchHandle(bool value) {
-    sprinklersSwitchHandle = value;
-  }
-
-  @action
-  setAlarmValue(bool value) {
-    alarmValue = value;
-  }
-
-  @action
-  setAlarmSwitchHandle(bool value) {
-    alarmSwitchHandle = value;
-  }
-
-  @action
-  setNotificationValue(bool value) {
-    notificationValue = value;
-  }
-
-  @action
-  setNotificationSwitchHandle(bool value) {
-    notificationSwitchHandle = value;
-  }
-
-  @action
-  setRoomNameObservable(String value) {
-    roomNameObservable = value;
-  }
-
-  @observable
   List<DataRoom>? roomList = [];
 
   @observable
   DataRoom? userRoom;
 
   @action
-  getUserRooms(String? login, String roomName) async {
-    roomList = await _repository.getUserRooms(login!, roomName);
+  getUserRooms(String? login, int? nameId) async {
+    roomList = await _repository.getUserRooms(login!, nameId!);
     print(roomList);
   }
 
   @action
-  sendRoomSensorValue(String name, String email, bool alarmOn,
-      bool notificationOn, bool sprinklersOn, int sensorValue) async {
-    await _repository.sendRoomSensorValue(
-        name, email, alarmOn, notificationOn, sprinklersOn, sensorValue);
+  updateSwitches(String login, int nameId, bool notificationOn, bool alarmOn, bool sprinklersOn) async {
+    await _repository.updateSwitches(login, nameId, notificationOn, alarmOn, sprinklersOn);
   }
 }

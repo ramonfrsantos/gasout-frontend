@@ -1,34 +1,27 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kf_drawer/kf_drawer.dart';
-import 'package:mqtt_client/mqtt_client.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
 
 import 'package:gas_out_app/app/constants/gasout_constants.dart';
 
 import '../../../data/model/room/room_response_model.dart';
 import '../../../data/repositories/notification/notification_repository.dart';
-import '../../../main.dart';
 import '../../helpers/global.dart';
 import '../../stores/controller/room/room_controller.dart';
 import '../detail/details_screen.dart';
 
 class HomeScreen extends KFDrawerContent {
   final String? username;
-  final String? email;
+  final String email;
 
-  HomeScreen({Key? key, this.username, this.email});
+  HomeScreen({Key? key, this.username, required this.email});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  int mqttSensorValue = 0;
-
   RoomController _roomController = RoomController();
 
   final NotificationRepository notificationRepository =
@@ -119,60 +112,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _streamBuilderMqtt(DataRoom room) {
-    List<MqttReceivedMessage<MqttMessage>>? list;
-
     return StreamBuilder(
-      initialData: list,
       builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final mqttReceivedMessages =
-              snapshot.data as List<MqttReceivedMessage<MqttMessage>>;
-          final recMessBytes =
-              mqttReceivedMessages[0].payload as MqttPublishMessage;
-          final recMessString = MqttPublishPayload.bytesToStringAsString(
-              recMessBytes.payload.message);
-
-          bool alarmOn = false;
-          bool notificationOn = false;
-          bool sprinklersOn = false;
-
-          final sensorValue =
-              json.decode(recMessString)['message']['sensorValue'];
-          final roomName = json.decode(recMessString)['message']['roomName'];
-          final userEmail = json.decode(recMessString)['message']['email'];
-
-          mqttSensorValue = (sensorValue / 10.0).toInt();
-          print(mqttSensorValue);
-
-          if (room.name.toString().toLowerCase() ==
-                  roomName.toString().toLowerCase() &&
-              room.userEmail.toLowerCase() ==
-                  userEmail.toString().toLowerCase()) {
-            if (mqttSensorValue > 0 && mqttSensorValue < 52) {
-              alarmOn = false;
-              notificationOn = true;
-              sprinklersOn = false;
-            } else {
-              alarmOn = true;
-              notificationOn = true;
-              sprinklersOn = false;
-            }
-
-            _generateNotification(mqttSensorValue);
-
-            _roomController.sendRoomSensorValue(room.name, widget.email!,
-                alarmOn, notificationOn, sprinklersOn, mqttSensorValue);
-          }
-        }
-
         return Container();
       },
     );
-  }
-
-  // CARREGA A LISTA DE COMODOS QUANDO INICIA A TELA
-  Future<void> _generateNotification(int mqttReceivedValue) async {
-    roomController.getUserRooms(widget.email!, "");
   }
 
   String _capitalizeFirstLetter(String text) {
@@ -190,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Text(
-        "Olá, ${(_capitalizeFirstLetter(widget.username!)).split(' ')[0]}!",
+        "Olá, ${(_capitalizeFirstLetter(widget.username!)).split(' ')[0]}",
         textAlign: TextAlign.start,
         style: TextStyle(
           fontSize: 21,
@@ -243,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _roomPickerList() {
-    if (_roomController.roomList == null || _roomController.roomList!.isEmpty) {
+    if (_roomController.roomList!.isEmpty) {
       return CircularProgressIndicator(
           color: ConstantColors.primaryColor.withOpacity(0.8));
     } else {
@@ -258,11 +202,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           crossAxisCount: 2,
           children: _roomController.roomList!
               .map((room) => _listItem(
-                  _buildRoomImage(room.name.toString()),
-                  room.name,
+                  _buildRoomImage(room.details!.nameDescription!),
+              room.details!.nameId,
+              room.details!.nameDescription!,
                   room.sensorValue,
-                  0,
-                  _buildRoomIcon(room.name.toString())))
+                  _buildRoomIcon(room.details!.nameDescription!)))
               .toList(),
         ),
       );
@@ -293,12 +237,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     text = text.replaceAll(RegExp(r'[óòôõ]', caseSensitive: false), r'o');
     text = text.replaceAll(RegExp(r'[úùû]', caseSensitive: false), r'u');
     text = text.replaceAll(RegExp(r'[ç]', caseSensitive: false), r'c');
-    text = text.replaceAll(RegExp(r'[_]', caseSensitive: false), r'-');
+    text = text.replaceAll(RegExp(r'[ ]', caseSensitive: false), r'-');
     return text;
   }
 
   _getUserRooms() async {
-    await _roomController.getUserRooms(widget.email, "");
+    await _roomController.getUserRooms(widget.email, 0);
   }
 
   _showLogOutAlertDialog(BuildContext context) {
@@ -333,8 +277,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _listItem(String imgpath, String roomName, int averageValue,
-      int maxValue, AssetImage icon) {
+  Widget _listItem(String imgpath, int roomNameId, String roomNameDescription, int averageValue,
+      AssetImage icon) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: GestureDetector(
@@ -343,10 +287,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               builder: (context) => DetailsScreen(
                     imgPath: imgpath,
                     averageValue: averageValue,
-                    maxValue: maxValue,
                     totalHours: monitoringController.monitoringTotalHours,
                     email: widget.email,
-                    roomName: roomName,
+                nameDescription: roomNameDescription,
+                nameId: roomNameId,
                   )));
         },
         child: Container(
@@ -360,14 +304,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             child: Column(
               children: [
                 Container(
-                  height: 55.0,
-                  width: 55.0,
+                  height: 45.0,
+                  width: 45.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(image: icon, fit: BoxFit.cover)),
                 ),
                 SizedBox(height: 10),
                 Text(
-                  _buildRoomNameShown(roomName.toString()),
+                  _buildRoomNameShown(roomNameDescription.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 18,
@@ -381,57 +325,5 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
     );
-
-    // return Padding(
-    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-    //   child: Stack(children: [
-    //     InkWell(
-    //       onTap: () {
-    //         Navigator.of(context).push(MaterialPageRoute(
-    //             builder: (context) => DetailsScreen(
-    //                   imgPath: imgpath,
-    //                   averageValue: averageValue,
-    //                   maxValue: maxValue,
-    //                   totalHours: monitoringController.monitoringTotalHours,
-    //                   email: widget.email,
-    //                   roomName: stringPath,
-    //                 )));
-    //       },
-    //       child: Stack(alignment: Alignment.center, children: [
-    //         Container(
-    //           width: 130,
-    //           height: 130,
-    //           decoration: BoxDecoration(
-    //             borderRadius: BorderRadius.circular(25),
-    //             color: ConstantColors.primaryColor
-    //                 .withOpacity(0.8), // image: DecorationImage(
-    //             //     image: AssetImage(imgpath), fit: BoxFit.cover, opacity: 0.96),
-    //           ),
-    //         ),
-    //         Column(
-    //           children: [
-    //             SizedBox(height: 20),
-    //             Container(
-    //               height: 60.0,
-    //               width: 60.0,
-    //               decoration: BoxDecoration(
-    //                   image: DecorationImage(image: icon, fit: BoxFit.cover)),
-    //             ),
-    //             SizedBox(height: 15),
-    //             Container(
-    //               alignment: Alignment.center,
-    //               width: 120,
-    //               child: Text(stringPath,
-    //                   style: TextStyle(
-    //                       fontSize: 16,
-    //                       color: Colors.white,
-    //                       fontWeight: FontWeight.bold)),
-    //             )
-    //           ],
-    //         ),
-    //       ]),
-    //     )
-    //   ]),
-    // );
   }
 }

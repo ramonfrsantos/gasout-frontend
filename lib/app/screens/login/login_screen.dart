@@ -4,11 +4,9 @@ import 'package:gas_out_app/app/constants/gasout_constants.dart';
 import 'package:gas_out_app/app/screens/login/forgot_password_screen.dart';
 import 'package:gas_out_app/data/repositories/user/user_repository.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:simple_animations/simple_animations.dart';
 
 import '../../../data/model/login/login_response_model.dart';
-import '../../../data/repositories/login/login_repository.dart';
 import '../../../main.dart';
 import '../../stores/controller/login/login_controller.dart';
 
@@ -314,8 +312,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => MainWidget(
                                             title: 'GasOut',
-                                            username: response?.userName,
-                                            email: response?.login
+                                            username: response!.userName,
+                                            email: response.login!
                                           )),
                                 );
                               } else {

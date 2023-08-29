@@ -9,22 +9,6 @@ part of 'room_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$RoomController on _RoomControllerBase, Store {
-  late final _$sprinklersValueAtom =
-      Atom(name: '_RoomControllerBase.sprinklersValue', context: context);
-
-  @override
-  bool get sprinklersValue {
-    _$sprinklersValueAtom.reportRead();
-    return super.sprinklersValue;
-  }
-
-  @override
-  set sprinklersValue(bool value) {
-    _$sprinklersValueAtom.reportWrite(value, super.sprinklersValue, () {
-      super.sprinklersValue = value;
-    });
-  }
-
   late final _$roomListAtom =
       Atom(name: '_RoomControllerBase.roomList', context: context);
 
@@ -61,39 +45,24 @@ mixin _$RoomController on _RoomControllerBase, Store {
       AsyncAction('_RoomControllerBase.getUserRooms', context: context);
 
   @override
-  Future getUserRooms(String? login, String roomName) {
+  Future getUserRooms(String? login, int? nameId) {
     return _$getUserRoomsAsyncAction
-        .run(() => super.getUserRooms(login, roomName));
+        .run(() => super.getUserRooms(login, nameId));
   }
 
-  late final _$sendRoomSensorValueAsyncAction =
-      AsyncAction('_RoomControllerBase.sendRoomSensorValue', context: context);
+  late final _$updateSwitchesAsyncAction =
+      AsyncAction('_RoomControllerBase.updateSwitches', context: context);
 
   @override
-  Future sendRoomSensorValue(String name, String email, bool alarmOn,
-      bool notificationOn, bool sprinklersOn, int sensorValue) {
-    return _$sendRoomSensorValueAsyncAction.run(() => super.sendRoomSensorValue(
-        name, email, alarmOn, notificationOn, sprinklersOn, sensorValue));
-  }
-
-  late final _$_RoomControllerBaseActionController =
-      ActionController(name: '_RoomControllerBase', context: context);
-
-  @override
-  dynamic setSprinklersValue(bool value) {
-    final _$actionInfo = _$_RoomControllerBaseActionController.startAction(
-        name: '_RoomControllerBase.setSprinklersValue');
-    try {
-      return super.setSprinklersValue(value);
-    } finally {
-      _$_RoomControllerBaseActionController.endAction(_$actionInfo);
-    }
+  Future updateSwitches(String login, int nameId, bool notificationOn,
+      bool alarmOn, bool sprinklersOn) {
+    return _$updateSwitchesAsyncAction.run(() => super
+        .updateSwitches(login, nameId, notificationOn, alarmOn, sprinklersOn));
   }
 
   @override
   String toString() {
     return '''
-sprinklersValue: ${sprinklersValue},
 roomList: ${roomList},
 userRoom: ${userRoom}
     ''';

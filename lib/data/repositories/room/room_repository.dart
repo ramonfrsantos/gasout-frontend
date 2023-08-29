@@ -11,17 +11,13 @@ class RoomRepository {
 
   String baseUrl = AppConfig.getInstance()!.apiBaseUrl;
 
-  Future<List<DataRoom>> getUserRooms(String email, String roomName) async {
+  Future<List<DataRoom>> getUserRooms(String? email, int? nameId) async {
 
-    String url = '';
-
-    if(roomName.isNotEmpty){
-      url = '${baseUrl}rooms/$email?roomName=$roomName';
-    } else {
-      url = '${baseUrl}rooms/$email';
-    }
+    String url = '${baseUrl}rooms/$email?roomNameId=$nameId';
 
     print(url);
+
+    List<DataRoom> list = [];
 
     try {
       var response = await client.get(
@@ -38,31 +34,29 @@ class RoomRepository {
         print(response.data['data']);
       }
 
-      List<DataRoom> list = [];
-
       response.data['data'].map((el) {
-        list.add(
-          DataRoom.fromJson(el),
-        );
+          list.add(
+              DataRoom.fromJson(el)
+          );
       }).toList();
 
       return list;
+
     } catch (e) {
       print(e.toString());
-      throw ('Erro na conexão');
+      throw e;
     }
   }
 
-  Future<void> sendRoomSensorValue(String name, String email, bool alarmOn,
-      bool notificationOn, bool sprinklersOn, int sensorValue) async {
-    final String url = '${baseUrl}rooms/sensor-measurement-details/$email';
+  Future<void> updateSwitches(String email, int nameId, bool notificationOn, bool alarmOn, bool sprinklersOn) async {
+    final String url = '${baseUrl}rooms';
     print(url);
 
     final bodyJSON = jsonEncode({
-      "alarmOn": alarmOn,
-      "name": name,
+      "nameId": nameId,
+      "userEmail": email,
       "notificationOn": notificationOn,
-      "sensorValue": sensorValue,
+      "alarmOn": alarmOn,
       "sprinklersOn": sprinklersOn
     });
 
@@ -81,7 +75,7 @@ class RoomRepository {
       );
 
       if (response.statusCode == 200) {
-        print(response.data);
+        print(response.data['data']);
         print("HTTP " + response.statusCode.toString());
       }
       // var jsonDataRoom = json.decode(response.data);
