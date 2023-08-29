@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/gasout_constants.dart';
 import '../../helpers/global.dart';
@@ -18,7 +21,8 @@ class DetailsScreen extends StatefulWidget {
 
   DetailsScreen(
       {Key? key,
-      this.imgPath, required this.nameId,
+      this.imgPath,
+      required this.nameId,
       required this.averageValue,
       required this.totalHours,
       required this.email,
@@ -34,8 +38,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
   void initState() {
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
-
-    print("Nível de vazamento diario: " + widget.averageValue.toString());
 
     super.initState();
   }
@@ -61,7 +63,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     var valorMedioDiarioPorCento = ((100 * widget.averageValue) / 100);
-    return Scaffold(
+    return Observer(builder: (context) {
+      return Scaffold(
           body: roomController.roomList!.length > 0
               ? Stack(
                   children: <Widget>[
@@ -122,7 +125,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         setState(() {
                                           widget.notificationOn = value;
                                           // salvar switch
-                                          roomController.updateSwitches(widget.email, widget.nameId, value, widget.alarmOn, widget.sprinklersOn);
+                                          roomController.updateSwitches(
+                                              widget.email,
+                                              widget.nameId,
+                                              value,
+                                              widget.alarmOn,
+                                              widget.sprinklersOn);
                                         });
                                       },
                                     ),
@@ -134,8 +142,12 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                         setState(() {
                                           widget.alarmOn = value;
                                           // salvar switch
-                                          roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, value, widget.sprinklersOn);
-
+                                          roomController.updateSwitches(
+                                              widget.email,
+                                              widget.nameId,
+                                              widget.notificationOn,
+                                              value,
+                                              widget.sprinklersOn);
                                         });
                                       },
                                     ),
@@ -145,14 +157,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       value: widget.sprinklersOn,
                                       onChanged: (value) {
                                         // VERIFICA SE OS SPRINKLERS ESTÃO OU NÃO ATIVOS
-                                        // if (valorMedioDiarioPorCento > 50) {}
                                         widget.sprinklersOn == true
                                             ? _showAlertDialog(context)
                                             : setState(() {
                                                 widget.sprinklersOn = value;
                                                 // salvar switch
-                                                roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, widget.alarmOn, value);
-                                        });
+                                                roomController.updateSwitches(
+                                                    widget.email,
+                                                    widget.nameId,
+                                                    widget.notificationOn,
+                                                    widget.alarmOn,
+                                                    value);
+                                              });
                                       },
                                     ),
                                   ],
@@ -177,7 +193,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                       ),
                                       Spacer(),
                                       Text(
-                                        widget.totalHours.toString(),
+                                        monitoringController
+                                            .monitoringTotalHours
+                                            .toString(),
                                         style: new TextStyle(
                                             color: Colors.black87,
                                             fontSize: 18),
@@ -225,6 +243,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 )
               : CircularProgressIndicator(
                   color: ConstantColors.primaryColor.withOpacity(0.8)));
+    });
   }
 
   Widget _monitoring() {
@@ -246,9 +265,20 @@ class _DetailsScreenState extends State<DetailsScreen> {
                     value: monitoringController.activeMonitoring,
                     onChanged: (value) {
                       setState(() {
-                        monitoringController.setValue(value);
-                        widget.totalHours =
-                            monitoringController.monitoringTotalHours;
+                        monitoringController.activeMonitoring = value;
+
+                        const oneHour = const Duration(seconds: 3);
+
+                        Timer.periodic(
+                          oneHour,
+                          (Timer timer) {
+                            if (monitoringController.activeMonitoring) {
+                              monitoringController.monitoringTotalHours++;
+                            } else {
+                              timer.cancel();
+                            }
+                          },
+                        );
                       });
                     },
                     activeColor: ConstantColors.primaryColor,
@@ -322,7 +352,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
         setState(() {
           widget.sprinklersOn = false;
           // salvar switch
-          roomController.updateSwitches(widget.email, widget.nameId, widget.notificationOn, widget.alarmOn, widget.sprinklersOn);
+          roomController.updateSwitches(widget.email, widget.nameId,
+              widget.notificationOn, widget.alarmOn, widget.sprinklersOn);
         });
         Navigator.of(context).pop();
       },
