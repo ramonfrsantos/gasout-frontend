@@ -17,18 +17,20 @@ class RoomResponseModel {
 
 class DataRoom {
   String? id;
-  late int sensorValue;
+  late int gasSensorValue;
+  late int umiditySensorValue;
   UserRoom? user;
   RoomDetails? details;
   late bool notificationOn;
   late bool alarmOn;
   late bool sprinklersOn;
 
-  DataRoom({this.id, required this.sensorValue, this.user, this.details, required this.notificationOn, required this.alarmOn, required this.sprinklersOn});
+  DataRoom({this.id, required this.gasSensorValue, required this.umiditySensorValue, this.user, this.details, required this.notificationOn, required this.alarmOn, required this.sprinklersOn});
 
   DataRoom.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    sensorValue = json['sensorValue'];
+    gasSensorValue = json['gasSensorValue'];
+    umiditySensorValue = json['umiditySensorValue'];
     user = (json['user'] != null ? new UserRoom.fromJson(json['user']) : null)!;
     details = (json['details'] != null ? new RoomDetails.fromJson(json['details']) : null)!;
     notificationOn = json['notificationOn'];
@@ -39,7 +41,8 @@ class DataRoom {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['sensorValue'] = this.sensorValue;
+    data['gasSensorValue'] = this.gasSensorValue;
+    data['umiditySensorValue'] = this.umiditySensorValue;
     data['user'] = this.user?.toJson();
     data['details'] = this.details?.toJson();
     data['notificationOn'] = this.notificationOn;

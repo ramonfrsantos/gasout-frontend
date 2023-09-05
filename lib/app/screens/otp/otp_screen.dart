@@ -233,7 +233,7 @@ class _OtpScreenState extends State<OtpScreen> {
     //configura o AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text("Erro", style: GoogleFonts.muli(fontSize: 24)),
-      content: Text("Código icorreto.",
+      content: Text("Código incorreto.",
           style: GoogleFonts.muli(fontSize: 20)),
     );
     showDialog(

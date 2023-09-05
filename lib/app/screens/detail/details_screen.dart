@@ -11,7 +11,8 @@ class DetailsScreen extends StatefulWidget {
   final int nameId;
   final String nameDescription;
 
-  late int averageValue = 0;
+  late int gasSensorValue = 0;
+  late int umiditySensorValue = 0;
   late int totalHours = 0;
   late String email = "";
 
@@ -23,7 +24,8 @@ class DetailsScreen extends StatefulWidget {
       {Key? key,
       this.imgPath,
       required this.nameId,
-      required this.averageValue,
+      required this.gasSensorValue,
+      required this.umiditySensorValue,
       required this.totalHours,
       required this.email,
       required this.nameDescription})
@@ -46,7 +48,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
     await roomController.getUserRooms(widget.email, widget.nameId);
 
     setState(() {
-      widget.averageValue = roomController.roomList![0].sensorValue;
+      widget.gasSensorValue = roomController.roomList![0].gasSensorValue;
+      widget.umiditySensorValue = roomController.roomList![0].umiditySensorValue;
 
       widget.notificationOn = roomController.roomList![0].notificationOn;
       widget.alarmOn = roomController.roomList![0].alarmOn;
@@ -62,7 +65,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var valorMedioDiarioPorCento = ((100 * widget.averageValue) / 100);
     return Observer(builder: (context) {
       return Scaffold(
           body: roomController.roomList!.length > 0
@@ -98,7 +100,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       alignment: Alignment.bottomCenter,
                       child: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 380,
+                          height: 400,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(40),
@@ -210,14 +212,14 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                   child: Row(
                                     children: <Widget>[
                                       Text(
-                                        "Nível de vazamento diário",
+                                        "Nível de gás detectado",
                                         style: new TextStyle(
                                             color: Colors.black87,
                                             fontSize: 18),
                                       ),
                                       Spacer(),
                                       Text(
-                                        valorMedioDiarioPorCento.toString() +
+                                        widget.gasSensorValue.toString() +
                                             "%",
                                         style: new TextStyle(
                                             color: Colors.black87,
@@ -226,7 +228,29 @@ class _DetailsScreenState extends State<DetailsScreen> {
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: 24),
+                                SizedBox(height: 5),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 20, right: 20),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        "Nível de umidade",
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        widget.umiditySensorValue.toString() +
+                                            "%",
+                                        style: new TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 Padding(
                                   padding: EdgeInsets.only(
                                       top: 5, left: 20, right: 20),
@@ -267,7 +291,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       setState(() {
                         monitoringController.activeMonitoring = value;
 
-                        const oneHour = const Duration(seconds: 3);
+                        const oneHour = const Duration(seconds: 10);
 
                         Timer.periodic(
                           oneHour,

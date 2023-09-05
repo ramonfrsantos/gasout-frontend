@@ -203,9 +203,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           children: _roomController.roomList!
               .map((room) => _listItem(
                   _buildRoomImage(room.details!.nameDescription!),
-              room.details!.nameId,
-              room.details!.nameDescription!,
-                  room.sensorValue,
+                  room.details!.nameId,
+                  room.details!.nameDescription!,
+                  room.gasSensorValue,
+                  room.umiditySensorValue,
                   _buildRoomIcon(room.details!.nameDescription!)))
               .toList(),
         ),
@@ -216,7 +217,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   String _buildRoomNameShown(String text) {
     text = text.toLowerCase();
     text = _capitalizeFirstLetter(text);
-    return _capitalizeFirstLetter(text.split('_').last);
+    return _capitalizeFirstLetter(text.split(' ').last);
   }
 
   AssetImage _buildRoomIcon(String text) {
@@ -277,35 +278,36 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _listItem(String imgpath, int roomNameId, String roomNameDescription, int averageValue,
-      AssetImage icon) {
+  Widget _listItem(String imgpath, int roomNameId, String roomNameDescription,
+      int gasSensorValue, int umiditySensorValue, AssetImage icon) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => DetailsScreen(
                     imgPath: imgpath,
-                    averageValue: averageValue,
+                    gasSensorValue: gasSensorValue,
+                    umiditySensorValue: umiditySensorValue,
                     totalHours: monitoringController.monitoringTotalHours,
                     email: widget.email,
-                nameDescription: roomNameDescription,
-                nameId: roomNameId,
+                    nameDescription: roomNameDescription,
+                    nameId: roomNameId,
                   )));
         },
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
+            borderRadius: BorderRadius.circular(20),
             color: ConstantColors.primaryColor.withOpacity(0.8),
           ),
           // color: ConstantColors.primaryColor.withOpacity(0.8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 35.0, vertical: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30),
             child: Column(
               children: [
                 Container(
-                  height: 45.0,
-                  width: 45.0,
+                  height: 50.0,
+                  width: 50.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(image: icon, fit: BoxFit.cover)),
                 ),
@@ -314,7 +316,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   _buildRoomNameShown(roomNameDescription.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 17,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

@@ -129,23 +129,23 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         //   icon: Icon(Icons.trending_up, color: Colors.white),
         //   page: StatsScreen(),
         // ),
-        // KFDrawerItem.initWithPage(
-        //   text: Text(
-        //     'Suporte técnico',
-        //     style: TextStyle(color: Colors.white, fontSize: 18),
-        //   ),
-        //   icon: Image.asset(
-        //     "assets/images/icWhatsApp.png",
-        //     color: Colors.white,
-        //     width: 26,
-        //     height: 26,
-        //   ),
-        //   onPressed: () {
-        //     String urlWpp =
-        //         'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
-        //     launchUrlString(urlWpp);
-        //   },
-        // ),
+        KFDrawerItem.initWithPage(
+          text: Text(
+            'Suporte técnico',
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          icon: Image.asset(
+            "assets/images/icWhatsApp.png",
+            color: Colors.white,
+            width: 26,
+            height: 26,
+          ),
+          onPressed: () {
+            String urlWpp =
+                'whatsapp://send?phone=${ConstantsSupport.phone}&text=${ConstantsSupport.message}';
+            launchUrlString(urlWpp);
+          },
+        ),
         KFDrawerItem.initWithPage(
           text: Text(
             'Chat Telegram',
