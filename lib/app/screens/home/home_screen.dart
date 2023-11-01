@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kf_drawer/kf_drawer.dart';
 
 import 'package:gas_out_app/app/constants/gasout_constants.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../data/model/room/room_response_model.dart';
 import '../../../data/repositories/notification/notification_repository.dart';
 import '../../helpers/global.dart';
 import '../../stores/controller/room/room_controller.dart';
 import '../detail/details_screen.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'dart:io';
+import 'package:screenshot/screenshot.dart';
+
+import '../../constants/gasout_constants.dart';
+import '../report/chat_for_pdf.dart';
 
 class HomeScreen extends KFDrawerContent {
   final String? username;
@@ -23,9 +33,7 @@ class HomeScreen extends KFDrawerContent {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   RoomController _roomController = RoomController();
-
-  final NotificationRepository notificationRepository =
-      NotificationRepository();
+  final NotificationRepository notificationRepository = NotificationRepository();
 
   @override
   void initState() {
@@ -47,63 +55,59 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       child: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                      child: Material(
-                        shadowColor: Colors.transparent,
-                        color: Colors.transparent,
-                        child: IconButton(
-                          icon: Icon(Icons.menu, color: Colors.black, size: 30),
-                          onPressed: widget.onMenuPressed,
-                        ),
-                      ),
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  child: Material(
+                    shadowColor: Colors.transparent,
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(Icons.menu, color: Colors.black, size: 30),
+                      onPressed: widget.onMenuPressed,
                     ),
-                    ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                      child: Material(
-                        shadowColor: Colors.transparent,
-                        color: Colors.transparent,
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.exit_to_app,
-                            color: Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            _showLogOutAlertDialog(context);
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => LoginScreen()));
-                          },
-                        ),
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                  child: Material(
+                    shadowColor: Colors.transparent,
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.exit_to_app,
+                        color: Colors.black,
+                        size: 30,
                       ),
+                      onPressed: () {
+                        _showLogOutAlertDialog(context);
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => LoginScreen()));
+                      },
                     ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    _title(),
-                    SizedBox(height: 28),
-                    _topLogo(),
-                    SizedBox(height: 30),
-                    _shortDescription(),
-                    SizedBox(height: 30),
-                    _roomPicker(),
-                  ],
-                ),
-                Column(
-                  children: _roomController.roomList!
-                      .map((room) => _streamBuilderMqtt(room))
-                      .toList(),
+                  ),
                 ),
               ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                _title(),
+                SizedBox(height: 28),
+                _topLogo(),
+                SizedBox(height: 30),
+                _shortDescription(),
+                SizedBox(height: 30),
+                _roomPicker(),
+              ],
+            ),
+            Column(
+              children: _roomController.roomList!
+                  .map((room) => _streamBuilderMqtt(room))
+                  .toList(),
             ),
           ],
         ),
@@ -168,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _roomPicker() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      padding: const EdgeInsets.symmetric(vertical: 0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -192,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           color: ConstantColors.primaryColor.withOpacity(0.8));
     } else {
       return Container(
+        padding: EdgeInsets.symmetric(horizontal: 15),
         child: GridView.count(
           primary: false,
           shrinkWrap: true,
@@ -281,11 +286,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget _listItem(String imgpath, int roomNameId, String roomNameDescription,
       int gasSensorValue, int umiditySensorValue, AssetImage icon) {
     return Padding(
-      padding: const EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(12),
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => DetailsScreen(
+              builder: (context) =>
+                  DetailsScreen(
                     imgPath: imgpath,
                     gasSensorValue: gasSensorValue,
                     umiditySensorValue: umiditySensorValue,
@@ -296,27 +302,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   )));
         },
         child: Container(
+          width: 150,
+          height: 150,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(30),
             color: ConstantColors.primaryColor.withOpacity(0.8),
           ),
           // color: ConstantColors.primaryColor.withOpacity(0.8),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 30),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 8.0, vertical: 35),
             child: Column(
               children: [
                 Container(
-                  height: 50.0,
-                  width: 50.0,
+                  height: 40.0,
+                  width: 40.0,
                   decoration: BoxDecoration(
-                      image: DecorationImage(image: icon, fit: BoxFit.cover)),
+                      image:
+                      DecorationImage(image: icon, fit: BoxFit.cover)),
                 ),
                 SizedBox(height: 10),
                 Text(
                   _buildRoomNameShown(roomNameDescription.toString()),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 17,
+                    fontSize: 18,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),

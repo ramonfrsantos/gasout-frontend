@@ -123,11 +123,13 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
         ),
         // KFDrawerItem.initWithPage(
         //   text: Text(
-        //     'Análise Geral',
+        //     'Relatório de Análise',
         //     style: TextStyle(color: Colors.white, fontSize: 18),
         //   ),
         //   icon: Icon(Icons.trending_up, color: Colors.white),
-        //   page: StatsScreen(),
+        //   page: ReportScreen(
+        //     usermail: widget.email, gasSensorValues: [10, 20, 30, 40, 50, 60, 70, 80, 90, 50, 30, 30],
+        //   ),
         // ),
         KFDrawerItem.initWithPage(
           text: Text(
@@ -208,16 +210,3 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
       statusText = content;
   }
 }
-
-Map<int, Color> color = {
-  50: Color.fromRGBO(199, 0, 0, .1),
-  100: Color.fromRGBO(199, 0, 0, .2),
-  200: Color.fromRGBO(199, 0, 0, .3),
-  300: Color.fromRGBO(199, 0, 0, .4),
-  400: Color.fromRGBO(199, 0, 0, .5),
-  500: Color.fromRGBO(199, 0, 0, .6),
-  600: Color.fromRGBO(199, 0, 0, .7),
-  700: Color.fromRGBO(199, 0, 0, .8),
-  800: Color.fromRGBO(199, 0, 0, .9),
-  900: Color.fromRGBO(199, 0, 0, 1),
-};

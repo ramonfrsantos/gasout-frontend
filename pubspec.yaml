@@ -56,6 +56,12 @@ dependencies:
   flutter_svg: ^1.0.3
   mqtt_client: ^9.6.7
   ndialog: ^4.1.1
+  flutter_email_sender: ^5.0.2
+  fl_chart: ^0.46.0
+  screenshot: ^1.2.3
+  pdf: ^3.3.0
+  path_provider: ^2.0.9
+  permission_handler: ^9.2.0
 
 flutter_native_splash:
   image: "assets/images/logo.png"
