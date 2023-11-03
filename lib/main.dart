@@ -121,16 +121,6 @@ class _MainWidgetState extends State<MainWidget> with TickerProviderStateMixin {
             email: widget.email,
           ),
         ),
-        // KFDrawerItem.initWithPage(
-        //   text: Text(
-        //     'Relatório de Análise',
-        //     style: TextStyle(color: Colors.white, fontSize: 18),
-        //   ),
-        //   icon: Icon(Icons.trending_up, color: Colors.white),
-        //   page: ReportScreen(
-        //     usermail: widget.email, gasSensorValues: [10, 20, 30, 40, 50, 60, 70, 80, 90, 50, 30, 30],
-        //   ),
-        // ),
         KFDrawerItem.initWithPage(
           text: Text(
             'Suporte técnico',

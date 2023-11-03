@@ -24,8 +24,9 @@ class DataRoom {
   late bool notificationOn;
   late bool alarmOn;
   late bool sprinklersOn;
+  List<double>? recentGasSensorValues;
 
-  DataRoom({this.id, required this.gasSensorValue, required this.umiditySensorValue, this.user, this.details, required this.notificationOn, required this.alarmOn, required this.sprinklersOn});
+  DataRoom({this.id, required this.gasSensorValue, required this.umiditySensorValue, this.user, this.details, required this.notificationOn, required this.alarmOn, required this.sprinklersOn, this.recentGasSensorValues});
 
   DataRoom.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -36,6 +37,7 @@ class DataRoom {
     notificationOn = json['notificationOn'];
     alarmOn = json['alarmOn'];
     sprinklersOn = json['sprinklersOn'];
+    recentGasSensorValues = json['recentGasSensorValues'].cast<double>();
   }
 
   Map<String, dynamic> toJson() {
@@ -48,6 +50,7 @@ class DataRoom {
     data['notificationOn'] = this.notificationOn;
     data['alarmOn'] = this.alarmOn;
     data['sprinklersOn'] = this.sprinklersOn;
+    data['recentGasSensorValues'] = this.recentGasSensorValues;
 
     return data;
   }
