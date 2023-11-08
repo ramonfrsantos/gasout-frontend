@@ -67,7 +67,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
         int hour = int.parse(value.timestamp!.substring(11, 13));
         return hour;
       }).toList();
-      widget.highestValueTime = DateTime.parse(roomController.roomList![0].recentGasSensorValues!.reduce((a, b) => a.sensorValue! > b.sensorValue! ? a : b).timestamp!).toLocal().toString().split('.')[0];
       widget.umiditySensorValue = roomController.roomList![0].umiditySensorValue;
 
       widget.notificationOn = roomController.roomList![0].notificationOn;
@@ -76,8 +75,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
       widget.email = roomController.roomList![0].user!.email!;
 
-      print("HORARIO DE PICO: " + widget.highestValueTime);
+      DateTime dateTime = DateTime.parse(roomController.roomList![0].recentGasSensorValues!.reduce((a, b) => a.sensorValue! > b.sensorValue! ? a : b).timestamp!).toLocal();
+      widget.highestValueTime = "${dateTime.hour}h ${dateTime.minute}min, do dia ${dateTime.day}/${dateTime.month}/${dateTime.year}";
 
+      print("HORARIO DE PICO: " + widget.highestValueTime);
+      print("MEDIA DOS VALORES: " + calculateAverage(widget.gasRecentValues).toStringAsFixed(2));
       print("NOTIFICATION: " + widget.notificationOn.toString());
       print("ALARM: " + widget.alarmOn.toString());
       print("SPRINKLERS: " + widget.sprinklersOn.toString());
@@ -472,7 +474,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     var pdf = pw.Document();
     ScreenshotController screenshotController = ScreenshotController();
     final bytes = await screenshotController.captureFromWidget(
-        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName, hoursTimestampValues: widget.hoursTimestampValues,)));
+        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName, hoursTimestampValues: widget.hoursTimestampValues, highestValueTime: widget.highestValueTime, averageValue: calculateAverage(widget.gasRecentValues).toStringAsFixed(2),)));
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
@@ -559,5 +561,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
     text = text[0].toUpperCase() + text.substring(1);
 
     return text;
+  }
+
+  double calculateAverage(List<double> list) {
+    double soma = 0;
+    for (double valor in list) {
+      soma += valor;
+    }
+    return soma / list.length;
   }
 }

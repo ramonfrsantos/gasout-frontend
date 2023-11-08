@@ -9,9 +9,19 @@ class ChartForPdf extends StatefulWidget {
   final List<double> gasSensorValues;
   final List<int> hoursTimestampValues;
   final String roomName;
+  final String averageValue;
+  final String highestValueTime;
   final String userMail;
 
-  ChartForPdf({Key? key, required this.gasSensorValues, required this.hoursTimestampValues, required this.roomName, required this.userMail}) : super(key: key);
+  ChartForPdf(
+      {Key? key,
+      required this.averageValue,
+      required this.highestValueTime,
+      required this.gasSensorValues,
+      required this.hoursTimestampValues,
+      required this.roomName,
+      required this.userMail})
+      : super(key: key);
 
   @override
   State<ChartForPdf> createState() => _ChartForPdfState();
@@ -27,7 +37,7 @@ class _ChartForPdfState extends State<ChartForPdf> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1,
+      aspectRatio: 0.75,
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         color: ConstantColors.thirdColor,
@@ -54,11 +64,22 @@ class _ChartForPdfState extends State<ChartForPdf> {
                     widget.roomName,
                     style: TextStyle(
                         color: ConstantColors.secondaryColor,
-                        fontSize: 18,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
-                    height: 38,
+                    height: 16,
+                  ),
+                  Text(
+                    "Valores mais recentes do sensor de gás",
+                    style: TextStyle(
+                        color: ConstantColors.primaryColor.withOpacity(0.8),
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(
+                    height: 22,
                   ),
                   Expanded(
                     child: Padding(
@@ -72,6 +93,40 @@ class _ChartForPdfState extends State<ChartForPdf> {
                   const SizedBox(
                     height: 12,
                   ),
+                  Text(
+                    "Média dos valores de medição: ",
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.averageValue,
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Horário do pico de medição: ",
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.highestValueTime,
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  )
                 ],
               ),
             ),
