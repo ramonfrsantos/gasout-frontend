@@ -23,6 +23,7 @@ class DetailsScreen extends StatefulWidget {
   late int umiditySensorValue = 0;
   late int totalHours = 0;
   late String email = "";
+  late String highestValueTime = "";
   late List<double> gasRecentValues = [];
   late List<int> hoursTimestampValues = [];
 
@@ -66,6 +67,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
         int hour = int.parse(value.timestamp!.substring(11, 13));
         return hour;
       }).toList();
+      widget.highestValueTime = DateTime.parse(roomController.roomList![0].recentGasSensorValues!.reduce((a, b) => a.sensorValue! > b.sensorValue! ? a : b).timestamp!).toLocal().toString().split('.')[0];
       widget.umiditySensorValue = roomController.roomList![0].umiditySensorValue;
 
       widget.notificationOn = roomController.roomList![0].notificationOn;
@@ -73,6 +75,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
       widget.sprinklersOn = roomController.roomList![0].sprinklersOn;
 
       widget.email = roomController.roomList![0].user!.email!;
+
+      print("HORARIO DE PICO: " + widget.highestValueTime);
 
       print("NOTIFICATION: " + widget.notificationOn.toString());
       print("ALARM: " + widget.alarmOn.toString());
