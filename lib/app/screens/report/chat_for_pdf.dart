@@ -68,6 +68,39 @@ class _ChartForPdfState extends State<ChartForPdf> {
                         fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(
+                    height: 12,
+                  ),
+                  Text(
+                    "Média dos valores de medição: ",
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.averageValue,
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal),
+                  ), const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Horário do pico de medição: ",
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.highestValueTime,
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(
                     height: 16,
                   ),
                   Text(
@@ -89,40 +122,6 @@ class _ChartForPdfState extends State<ChartForPdf> {
                         swapAnimationDuration: animDuration,
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Text(
-                    "Média dos valores de medição: ",
-                    style: TextStyle(
-                        color: ConstantColors.secondaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.averageValue,
-                    style: TextStyle(
-                        color: ConstantColors.secondaryColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    "Horário do pico de medição: ",
-                    style: TextStyle(
-                        color: ConstantColors.secondaryColor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    widget.highestValueTime,
-                    style: TextStyle(
-                        color: ConstantColors.secondaryColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal),
                   ),
                   const SizedBox(
                     height: 16,
