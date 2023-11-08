@@ -24,6 +24,7 @@ class DetailsScreen extends StatefulWidget {
   late int totalHours = 0;
   late String email = "";
   late List<double> gasRecentValues = [];
+  late List<int> hoursTimestampValues = [];
 
   late bool notificationOn = false;
   late bool alarmOn = false;
@@ -60,7 +61,11 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
     setState(() {
       widget.gasSensorValue = roomController.roomList![0].gasSensorValue;
-      widget.gasRecentValues = roomController.roomList![0].recentGasSensorValues!;
+      widget.gasRecentValues = roomController.roomList![0].recentGasSensorValues!.map((value) => value.sensorValue!.toDouble()).toList();
+      widget.hoursTimestampValues = roomController.roomList![0].recentGasSensorValues!.map((value) {
+        int hour = int.parse(value.timestamp!.substring(11, 13));
+        return hour;
+      }).toList();
       widget.umiditySensorValue = roomController.roomList![0].umiditySensorValue;
 
       widget.notificationOn = roomController.roomList![0].notificationOn;
@@ -463,7 +468,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     var pdf = pw.Document();
     ScreenshotController screenshotController = ScreenshotController();
     final bytes = await screenshotController.captureFromWidget(
-        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName,)));
+        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName, hoursTimestampValues: widget.hoursTimestampValues,)));
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,

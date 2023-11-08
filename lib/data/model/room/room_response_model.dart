@@ -24,7 +24,7 @@ class DataRoom {
   late bool notificationOn;
   late bool alarmOn;
   late bool sprinklersOn;
-  List<double>? recentGasSensorValues;
+  List<RecentGasSensorValues>? recentGasSensorValues;
 
   DataRoom({this.id, required this.gasSensorValue, required this.umiditySensorValue, this.user, this.details, required this.notificationOn, required this.alarmOn, required this.sprinklersOn, this.recentGasSensorValues});
 
@@ -37,7 +37,12 @@ class DataRoom {
     notificationOn = json['notificationOn'];
     alarmOn = json['alarmOn'];
     sprinklersOn = json['sprinklersOn'];
-    recentGasSensorValues = json['recentGasSensorValues'].cast<double>();
+    if (json['recentGasSensorValues'] != null) {
+      recentGasSensorValues = <RecentGasSensorValues>[];
+      json['recentGasSensorValues'].forEach((v) {
+        recentGasSensorValues!.add(new RecentGasSensorValues.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -50,7 +55,10 @@ class DataRoom {
     data['notificationOn'] = this.notificationOn;
     data['alarmOn'] = this.alarmOn;
     data['sprinklersOn'] = this.sprinklersOn;
-    data['recentGasSensorValues'] = this.recentGasSensorValues;
+    if (this.recentGasSensorValues != null) {
+      data['recentGasSensorValues'] =
+          this.recentGasSensorValues!.map((v) => v.toJson()).toList();
+    }
 
     return data;
   }
@@ -88,6 +96,25 @@ class RoomDetails {
     data['nameId'] = this.nameId;
     data['nameDescription'] = this.nameDescription;
 
+    return data;
+  }
+}
+
+class RecentGasSensorValues {
+  int? sensorValue;
+  String? timestamp;
+
+  RecentGasSensorValues({this.sensorValue, this.timestamp});
+
+  RecentGasSensorValues.fromJson(Map<String, dynamic> json) {
+    sensorValue = json['sensorValue'];
+    timestamp = json['timestamp'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['sensorValue'] = this.sensorValue;
+    data['timestamp'] = this.timestamp;
     return data;
   }
 }

@@ -7,10 +7,11 @@ import '../../constants/gasout_constants.dart';
 
 class ChartForPdf extends StatefulWidget {
   final List<double> gasSensorValues;
+  final List<int> hoursTimestampValues;
   final String roomName;
   final String userMail;
 
-  ChartForPdf({Key? key, required this.gasSensorValues, required this.roomName, required this.userMail}) : super(key: key);
+  ChartForPdf({Key? key, required this.gasSensorValues, required this.hoursTimestampValues, required this.roomName, required this.userMail}) : super(key: key);
 
   @override
   State<ChartForPdf> createState() => _ChartForPdfState();
@@ -162,41 +163,40 @@ class _ChartForPdfState extends State<ChartForPdf> {
               String hours;
               switch (group.x.toInt()) {
                 case 0:
-                  hours = '1';
+                  hours = widget.hoursTimestampValues[0].toString();
                   break;
                 case 1:
-                  hours = '2';
+                  hours = widget.hoursTimestampValues[1].toString();
                   break;
                 case 2:
-                  hours = '3';
+                  hours = widget.hoursTimestampValues[2].toString();
                   break;
                 case 3:
-                  hours = '4';
+                  hours = widget.hoursTimestampValues[3].toString();
                   break;
                 case 4:
-                  hours = '5';
+                  hours = widget.hoursTimestampValues[4].toString();
                   break;
                 case 5:
-                  hours = '6';
+                  hours = widget.hoursTimestampValues[5].toString();
                   break;
                 case 6:
-                  hours = '7';
+                  hours = widget.hoursTimestampValues[6].toString();
                   break;
                 case 7:
-                  hours = '8';
+                  hours = widget.hoursTimestampValues[7].toString();
                   break;
                 case 8:
-                  hours = '9';
+                  hours = widget.hoursTimestampValues[8].toString();
                   break;
                 case 9:
-                  hours = '10';
+                  hours = widget.hoursTimestampValues[9].toString();
                   break;
                 case 10:
-                  hours = '11';
+                  hours = widget.hoursTimestampValues[10].toString();
                   break;
                 case 11:
-                  hours = '12';
-                  break;
+                  hours = widget.hoursTimestampValues[11].toString();
                   break;
                 default:
                   throw Error();
@@ -231,7 +231,7 @@ class _ChartForPdfState extends State<ChartForPdf> {
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           margin: 16,
           getTitles: (double value) {
-            return (value + 1).toInt().toString() + "h";
+            return widget.hoursTimestampValues[value.toInt()].toString() + "h";
           },
         ),
         leftTitles: SideTitles(
