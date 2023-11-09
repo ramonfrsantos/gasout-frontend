@@ -35,6 +35,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   RoomController _roomController = RoomController();
   final NotificationRepository notificationRepository = NotificationRepository();
 
+  Future<void> _refresh(){
+    setState(() {
+      _roomController.getUserRooms(widget.email, 0);
+      _roomController.roomList;
+    });
+
+    return Future.delayed(Duration(seconds: 2));
+  }
+
   @override
   void initState() {
     super.initState();
@@ -52,64 +61,67 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   Widget _body() {
     return SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  child: Material(
-                    shadowColor: Colors.transparent,
-                    color: Colors.transparent,
-                    child: IconButton(
-                      icon: Icon(Icons.menu, color: Colors.black, size: 30),
-                      onPressed: widget.onMenuPressed,
-                    ),
-                  ),
-                ),
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(32.0)),
-                  child: Material(
-                    shadowColor: Colors.transparent,
-                    color: Colors.transparent,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.exit_to_app,
-                        color: Colors.black,
-                        size: 30,
+      child: RefreshIndicator(
+        onRefresh: _refresh,
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                    child: Material(
+                      shadowColor: Colors.transparent,
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: Icon(Icons.menu, color: Colors.black, size: 30),
+                        onPressed: widget.onMenuPressed,
                       ),
-                      onPressed: () {
-                        _showLogOutAlertDialog(context);
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) => LoginScreen()));
-                      },
                     ),
                   ),
-                ),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                _title(),
-                SizedBox(height: 28),
-                _topLogo(),
-                SizedBox(height: 30),
-                _shortDescription(),
-                SizedBox(height: 30),
-                _roomPicker(),
-              ],
-            ),
-            Column(
-              children: _roomController.roomList!
-                  .map((room) => _streamBuilderMqtt(room))
-                  .toList(),
-            ),
-          ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                    child: Material(
+                      shadowColor: Colors.transparent,
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.exit_to_app,
+                          color: Colors.black,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          _showLogOutAlertDialog(context);
+                          // Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //         builder: (context) => LoginScreen()));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  _title(),
+                  SizedBox(height: 28),
+                  _topLogo(),
+                  SizedBox(height: 30),
+                  _shortDescription(),
+                  SizedBox(height: 30),
+                  _roomPicker(),
+                ],
+              ),
+              Column(
+                children: _roomController.roomList!
+                    .map((room) => _streamBuilderMqtt(room))
+                    .toList(),
+              ),
+            ],
+          ),
         ),
       ),
     );
