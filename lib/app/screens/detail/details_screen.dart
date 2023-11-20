@@ -24,6 +24,7 @@ class DetailsScreen extends StatefulWidget {
   late int totalHours = 0;
   late String email = "";
   late String highestValueTime = "";
+  late String highestValue = "";
   late List<double> gasRecentValues = [];
   late List<int> hoursTimestampValues = [];
 
@@ -76,7 +77,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
       widget.email = roomController.roomList![0].user!.email!;
 
       DateTime dateTime = DateTime.parse(roomController.roomList![0].recentGasSensorValues!.reduce((a, b) => a.sensorValue! > b.sensorValue! ? a : b).timestamp!).toLocal();
+      dateTime = dateTime.subtract(Duration(hours: 3));
       widget.highestValueTime = "${dateTime.hour}h ${dateTime.minute}min, do dia ${dateTime.day}/${dateTime.month}/${dateTime.year}";
+      widget.highestValue = roomController.roomList![0].recentGasSensorValues!.reduce((a, b) => a.sensorValue! > b.sensorValue! ? a : b).sensorValue!.toString();
 
       print("HORARIO DE PICO: " + widget.highestValueTime);
       print("MEDIA DOS VALORES: " + calculateAverage(widget.gasRecentValues).toStringAsFixed(2));
@@ -474,7 +477,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
     var pdf = pw.Document();
     ScreenshotController screenshotController = ScreenshotController();
     final bytes = await screenshotController.captureFromWidget(
-        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName, hoursTimestampValues: widget.hoursTimestampValues, highestValueTime: widget.highestValueTime, averageValue: calculateAverage(widget.gasRecentValues).toStringAsFixed(2),)));
+        MediaQuery(data: const MediaQueryData(), child: ChartForPdf(gasSensorValues: widget.gasRecentValues, userMail: widget.email, roomName: roomName, hoursTimestampValues: widget.hoursTimestampValues, highestValueTime: widget.highestValueTime, averageValue: calculateAverage(widget.gasRecentValues).toStringAsFixed(2), highestValue: widget.highestValue,)));
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
