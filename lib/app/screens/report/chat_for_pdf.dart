@@ -10,6 +10,7 @@ class ChartForPdf extends StatefulWidget {
   final List<int> hoursTimestampValues;
   final String roomName;
   final String averageValue;
+  final String highestValue;
   final String highestValueTime;
   final String userMail;
 
@@ -17,6 +18,7 @@ class ChartForPdf extends StatefulWidget {
       {Key? key,
       required this.averageValue,
       required this.highestValueTime,
+      required this.highestValue,
       required this.gasSensorValues,
       required this.hoursTimestampValues,
       required this.roomName,
@@ -83,7 +85,8 @@ class _ChartForPdfState extends State<ChartForPdf> {
                         color: ConstantColors.secondaryColor,
                         fontSize: 12,
                         fontWeight: FontWeight.normal),
-                  ), const SizedBox(
+                  ),
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(
@@ -95,6 +98,23 @@ class _ChartForPdfState extends State<ChartForPdf> {
                   ),
                   Text(
                     widget.highestValueTime,
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.normal),
+                  ),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    "Valor do pico: ",
+                    style: TextStyle(
+                        color: ConstantColors.secondaryColor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    widget.highestValue,
                     style: TextStyle(
                         color: ConstantColors.secondaryColor,
                         fontSize: 12,
