@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -52,6 +54,8 @@ class _DetailsScreenState extends State<DetailsScreen> {
 
   @override
   void initState() {
+    WidgetsFlutterBinding.ensureInitialized();
+
     // SETA O VALOR DOS BOOLEANOS DOS SWITCHES
     setValues();
 
@@ -87,10 +91,26 @@ class _DetailsScreenState extends State<DetailsScreen> {
       print("ALARM: " + widget.alarmOn.toString());
       print("SPRINKLERS: " + widget.sprinklersOn.toString());
     });
+
+    const android = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+    final iOS = IOSInitializationSettings(
+      onDidReceiveLocalNotification: (_, __, ___, ____) {},
+    );
+
+    flutterLocalNotificationsPlugin.initialize(
+      InitializationSettings(android: android, iOS: iOS),
+      onSelectNotification: (String? payload) async {
+        if (payload != null) {
+          openDownloadedFile(payload);
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Observer(builder: (context) {
       return Scaffold(
           body: roomController.roomList!.length > 0
@@ -507,15 +527,13 @@ class _DetailsScreenState extends State<DetailsScreen> {
   Future<String> savePdf(pw.Document pdf, var context) async {
     String text = "";
 
-    var path;
     late File file;
-    Directory directory;
+    Directory directory = Directory('/storage/emulated/0/Download');
+
     if (Platform.isAndroid) {
-      path = (await getExternalStorageDirectory())!.path;
-      file = File("$path/relatorio_gasout.pdf");
+      file = File("${directory.path}/relatorio_gasout.pdf");
     } else if (Platform.isIOS) {
-      path = await getApplicationDocumentsDirectory();
-      directory = await Directory("${path.path}/relatorio_gasout").create();
+      directory = await Directory("${directory.path}/relatorio_gasout").create();
       file = File("${directory.path}/relatorio_gasout.pdf");
     }
 
@@ -540,8 +558,10 @@ class _DetailsScreenState extends State<DetailsScreen> {
           'channel_name',
           importance: Importance.max,
           priority: Priority.high,
+          ongoing: true
         ),
       ),
+      payload: file.path
     );
 
     text = "Relatório salvo com sucesso!";
@@ -573,4 +593,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
     }
     return soma / list.length;
   }
+
+  void openDownloadedFile(String filePath) {
+    OpenFile.open(filePath);
+  }
 }
+

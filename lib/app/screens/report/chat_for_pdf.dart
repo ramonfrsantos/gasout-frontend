@@ -301,8 +301,8 @@ class _ChartForPdfState extends State<ChartForPdf> {
         topTitles: SideTitles(showTitles: false),
         bottomTitles: SideTitles(
           showTitles: true,
-          getTextStyles: (context, value) => const TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+          getTextStyles: (context, value) => TextStyle(
+              color: ConstantColors.primaryColor.withOpacity(0.8), fontWeight: FontWeight.bold, fontSize: 14),
           margin: 16,
           getTitles: (double value) {
             return widget.hoursTimestampValues[value.toInt()].toString() + "h";

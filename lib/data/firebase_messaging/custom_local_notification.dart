@@ -35,7 +35,7 @@ class CustomLocalNotification {
   initializeNotifications() {
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    final iOS =IOSInitializationSettings(
+    final iOS = IOSInitializationSettings(
       onDidReceiveLocalNotification: (_, __, ___, ____) {},
     );
 
