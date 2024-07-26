@@ -1,16 +1,25 @@
-# gas_out_app
+# GasOut APP 🔥
 
-A new Flutter project.
+- Aplicativo Flutter de detecção e monitoramento de gás;
+- Integração com AWS IoT Core, utilizando MQTT, sensores MQ-4 e ESP8266;
+- O aplicativo consome dados de uma API Rest desenvolvida em Java com Spring Boot, gera notificações de alerta, relatórios, possibilita suporte técnico, dentre outras funcionalidades!
 
-## Getting Started
+## Fluxograma da arquitetura:
 
-This project is a starting point for a Flutter application.
+![image](https://github.com/user-attachments/assets/c0ac124f-5974-43cc-987c-ae6698f145f9)
 
-A few resources to get you started if this is your first Flutter project:
+A tabela abaixo demonstra as regras padrão para controle das notificações e atuadores no momento do vazamento gás utilizadas no projeto:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+![image](https://github.com/user-attachments/assets/43eaca8c-75ef-4791-9325-0e2e607ebbae)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Protótipo:
+
+![image](https://github.com/user-attachments/assets/b49e4e22-db9a-4051-a14a-e39ce1bee8ec)
+![image](https://github.com/user-attachments/assets/08768fe9-0128-438a-afe0-76e07f1bb347)
+
+Exemplo de notificação:
+
+![image](https://github.com/user-attachments/assets/c0befccc-907b-447f-84cc-0a2a00e2138f)
+
+Desenvolvido, a princípio, apenas para fins educativos! 📚
+##
